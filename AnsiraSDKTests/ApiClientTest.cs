@@ -21,6 +21,7 @@ namespace AnsiraSDKTests
     private TestContext testContextInstance;
 
     private string clientId, clientSecret;
+    private int sourceId;
 
     /// <summary>
     ///Gets or sets the test context which provides
@@ -58,6 +59,7 @@ namespace AnsiraSDKTests
     {
       this.clientId = ConfigurationManager.AppSettings["Test.Client.Id"];
       this.clientSecret = ConfigurationManager.AppSettings["Test.Client.Secret"];
+      this.sourceId = Convert.ToInt32(ConfigurationManager.AppSettings["Test.Source.Id"]);
     }
     
     //Use TestCleanup to run code after each test has run
@@ -75,7 +77,7 @@ namespace AnsiraSDKTests
     [TestMethod()]
     public void ApiClientConstructorTest()
     {
-      ApiClient target = new ApiClient(clientId, clientSecret);
+      ApiClient target = new ApiClient(clientId, clientSecret, true);
       Assert.IsNotNull(target);
     }
 
@@ -85,14 +87,14 @@ namespace AnsiraSDKTests
     [TestMethod()]
     public void CreateUpdateAndDeleteUserTest()
     {
-      ApiClient target = new ApiClient(clientId, clientSecret);
+      ApiClient target = new ApiClient(clientId, clientSecret, true);
       User user = new User()
       {
         DisplayName = "test user",
         FamilyName = "User",
         GivenName = "Test",
-        SourceId = 307,
-        Email = "tkiehne@fosfor.us",
+        SourceId = sourceId,
+        Email = Guid.NewGuid().ToString("N") + "@fosfor.us",
         Address = new Address()
         {
           Address1 = "209 E 6th",
@@ -124,11 +126,12 @@ namespace AnsiraSDKTests
 
     /// <summary>
     ///A test for FindUserByEmail
+    ///Presumes user email tkiehne@fosforus.net already exists
     ///</summary>
     [TestMethod()]
     public void FindUserByEmailTest()
     {
-      ApiClient target = new ApiClient(clientId, clientSecret);
+      ApiClient target = new ApiClient(clientId, clientSecret, true);
       User user = target.FindUserByEmail("tkiehne@fosforus.net");
 
       Assert.IsNotNull(user, "FindUserByEmail gets valid response");
@@ -139,11 +142,12 @@ namespace AnsiraSDKTests
 
     /// <summary>
     ///A test for FindUserByName
+    ///Preumes user name "Tom Kiehne" already exists
     ///</summary>
     [TestMethod()]
     public void FindUserByNameTest()
     {
-      ApiClient target = new ApiClient(clientId, clientSecret);
+      ApiClient target = new ApiClient(clientId, clientSecret, true);
       User user = target.FindUserByName("Kiehne", "Tom");
 
       Assert.IsNotNull(user, "FindUserByName gets valid response");
@@ -154,11 +158,12 @@ namespace AnsiraSDKTests
 
     /// <summary>
     ///A test for FindUserByUuid
+    ///Presumes user UUID f3804062-8248-11e4-8559-22000a8b39f0 already exists
     ///</summary>
     [TestMethod()]
     public void FindUserByUuidTest()
     {
-      ApiClient target = new ApiClient(clientId, clientSecret);
+      ApiClient target = new ApiClient(clientId, clientSecret, true);
       User user = target.FindUserByUuid("f3804062-8248-11e4-8559-22000a8b39f0");
 
       Assert.IsNotNull(user, "FindUserByUuid gets valid response");
@@ -168,12 +173,49 @@ namespace AnsiraSDKTests
     }
 
     /// <summary>
+    /// Test for User subscription methods - does not hit live API
+    /// </summary>
+    [TestMethod()]
+    public void SubscribeUserTest()
+    {
+      User user = new User()
+      {
+        DisplayName = "test user",
+        FamilyName = "User",
+        GivenName = "Test",
+        SourceId = sourceId,
+        Email = "tkiehne@fosfor.us",
+        Address = new Address()
+        {
+          Address1 = "209 E 6th",
+          City = "Austin",
+          State = "TX",
+          Zip = "78701"
+        }
+      };
+
+      user.Subscribe("FR", 11, this.sourceId);
+
+      Assert.IsNotNull(user.Subscriptions);
+      Assert.IsInstanceOfType(user.Subscriptions["FR"], typeof(Subscription));
+      Assert.IsTrue(user.Subscriptions["FR"].BrandId == 11);
+      Assert.IsTrue(user.Subscriptions["FR"].EmailStatus == "1");
+
+      user.Unsubscribe("FR", 11, this.sourceId);
+
+      Assert.IsNotNull(user.Subscriptions);
+      Assert.IsInstanceOfType(user.Subscriptions["FR"], typeof(Subscription));
+      Assert.IsTrue(user.Subscriptions["FR"].BrandId == 11);
+      Assert.IsTrue(user.Subscriptions["FR"].EmailStatus == "0");
+    }
+
+    /// <summary>
     ///A test for GetAllBrands
     ///</summary>
     [TestMethod()]
     public void GetAllBrandsTest()
     {
-      ApiClient target = new ApiClient(clientId, clientSecret);
+      ApiClient target = new ApiClient(clientId, clientSecret, true);
       IList<Brand> brands = target.GetAllBrands();
 
       Assert.IsNotNull(brands, "GetAllBrands gets valid response");
@@ -188,7 +230,7 @@ namespace AnsiraSDKTests
     [TestMethod()]
     public void GetPetBreedsTest()
     {
-      ApiClient target = new ApiClient(clientId, clientSecret);
+      ApiClient target = new ApiClient(clientId, clientSecret, true);
       IList<Breed> breeds = target.GetPetBreeds(1);
 
       Assert.IsNotNull(breeds, "GetPetBreeds gets valid response");
@@ -203,7 +245,7 @@ namespace AnsiraSDKTests
     [TestMethod()]
     public void GetPetTypesTest()
     {
-      ApiClient target = new ApiClient(clientId, clientSecret);
+      ApiClient target = new ApiClient(clientId, clientSecret, true);
       IList<PetType> types = target.GetPetTypes();
 
       Assert.IsNotNull(types, "GetPetTypes gets valid response");
@@ -218,7 +260,7 @@ namespace AnsiraSDKTests
     [TestMethod()]
     public void GetWetFoodBrandsTest()
     {
-      ApiClient target = new ApiClient(clientId, clientSecret);
+      ApiClient target = new ApiClient(clientId, clientSecret, true);
       IList<Brand> brands = target.GetWetFoodBrands(1);
 
       Assert.IsNotNull(brands, "GetWetFoodBrands gets valid response");
@@ -233,7 +275,7 @@ namespace AnsiraSDKTests
     [TestMethod()]
     public void GetDryFoodBrandsTest()
     {
-      ApiClient target = new ApiClient(clientId, clientSecret);
+      ApiClient target = new ApiClient(clientId, clientSecret, true);
       IList<Brand> brands = target.GetDryFoodBrands(1);
 
       Assert.IsNotNull(brands, "GetDryFoodBrands gets valid response");
@@ -244,26 +286,27 @@ namespace AnsiraSDKTests
 
     /// <summary>
     ///A test for SignOutUser
+    ///Presumes user ID 1551389 exists
     ///</summary>
     [TestMethod()]
     public void SignOutUserByIdTest()
     {
-      ApiClient target = new ApiClient(clientId, clientSecret);
+      ApiClient target = new ApiClient(clientId, clientSecret, true);
       target.SignOutUser(1551389);
       Assert.Inconclusive("SignOutUser does not return a value and cannot be verified.");
     }
 
     /// <summary>
     ///A test for SignOutUser
+    ///Presumes user ID 1551389 exists
     ///</summary>
     [TestMethod()]
     public void SignOutUserByObjectTest()
     {
-      ApiClient target = new ApiClient(clientId, clientSecret);
+      ApiClient target = new ApiClient(clientId, clientSecret, true);
       User user = new User(){ Id = 1551389, DisplayName = "test"};
       target.SignOutUser(user);
       Assert.Inconclusive("SignOutUser does not return a value and cannot be verified.");
     }
-
   }
 }

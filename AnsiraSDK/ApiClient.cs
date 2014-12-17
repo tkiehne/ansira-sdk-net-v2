@@ -23,9 +23,9 @@ namespace Ansira
     /// </summary>
     /// <param name="clientId">Assigned Client ID</param>
     /// <param name="clientSecret">Assigned Client Secret</param>
-    /// <param name="uat">Use UAT endpoint (true / default) or production (false)</param>
+    /// <param name="uat">Use UAT endpoint (true) or production (false / false)</param>
     /// <exception cref="System.ArgumentNullException">Thrown when clientId or clientSecret is null</exception>
-    public ApiClient(string clientId, string clientSecret, bool uat = true)
+    public ApiClient(string clientId, string clientSecret, bool uat = false)
     {
       if (clientId == null)
       {

@@ -23,7 +23,7 @@ namespace Ansira.Objects
     public string LogoUrl { get; set; }
     [JsonProperty(PropertyName="redirect_uri")]
     public string RedirectUri { get; set; }
-    //public DateTime? Created { get; set; } // killed due to invalid data (zeros)
+    //public DateTime? Created { get; set; } // killed due to invalid data in UAT (zeros)
     //public DateTime? Updated { get; set; }
     public string RegistrationURL { get; set; }
     public string HelpURL { get; set; }
