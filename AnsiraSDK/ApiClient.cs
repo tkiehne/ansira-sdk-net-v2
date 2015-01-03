@@ -198,12 +198,16 @@ namespace Ansira
     /// </summary>
     /// <param name="user">Ansira.Objects.User</param>
     /// <returns>Ansira.Objects.User or null if error</returns>
-    /// <exception cref="System.ArgumentNullException">Thrown when User is null</exception>
+    /// <exception cref="System.ArgumentNullException">Thrown when User or SourceId is null</exception>
     public User CreateUser(User user)
     {
       if (user == null)
       {
         throw new ArgumentNullException("user", "User must not be null");
+      }
+      if (user.SourceId <= 0)
+      {
+        throw new ArgumentNullException("user.SourceId", "SourceId must not be null");
       }
       NameValueCollection data = new NameValueCollection();
       string record = JsonConvert.SerializeObject(user, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
@@ -225,7 +229,7 @@ namespace Ansira
     /// </summary>
     /// <param name="user">Ansira.Objects.User with non-null UUID</param>
     /// <returns>Ansira.Objects.User or null if error</returns>
-    /// <exception cref="System.ArgumentNullException">Thrown when User or UUID is null</exception>
+    /// <exception cref="System.ArgumentNullException">Thrown when User, SourceId, or UUID is null</exception>
     public User UpdateUser(User user)
     {
       if (user == null)
@@ -236,6 +240,10 @@ namespace Ansira
       {
         throw new ArgumentNullException("uuid", "User's UUID must not be null");
       }
+      if (user.SourceId <= 0)
+      {
+        throw new ArgumentNullException("user.SourceId", "SourceId must not be null");
+      }
       NameValueCollection data = new NameValueCollection();
       string record = JsonConvert.SerializeObject(user, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
       data.Add("record", record);
@@ -243,7 +251,9 @@ namespace Ansira
       if (results != null)
       {
         ResponseV3 response = JsonConvert.DeserializeObject<ResponseV3>(results); // TEMP?
-        return JsonConvert.DeserializeObject<User>(JsonConvert.SerializeObject(response.Record.Results));
+        User responseUser = JsonConvert.DeserializeObject<User>(JsonConvert.SerializeObject(response.Record.Results));
+        responseUser.Uuid = user.Uuid; // TODO: question to Ansira as to why UUID is omitted
+        return responseUser;
       }
       else
       {

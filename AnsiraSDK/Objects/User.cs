@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
+using Ansira.Converters;
 
 namespace Ansira.Objects
 {
@@ -15,6 +17,8 @@ namespace Ansira.Objects
     public int? Id { get; set; }
     [JsonProperty(PropertyName="UUID")]
     public string Uuid { get; set; }
+    [Required(AllowEmptyStrings = false)]
+    [RegularExpression(@"^([^@\s]+)@((?:[-a-zA-Z0-9]+\.)+[a-zA-Z]{2,})$", ErrorMessage = "Email is not valid")]
     public string Email {get; set;}
     public string EmailVerified { get; set; }
     public string FamilyName {get; set;}
@@ -22,6 +26,7 @@ namespace Ansira.Objects
     public string GivenName {get; set;}
     public Address Address { get; set; }
     public string AddressVerified { get; set; }
+    [JsonConverter(typeof(MonthDayYearDateConverter))]
     public DateTime? BirthDay {get; set;}
     public string Gender {get; set;}
     public string DisplayName {get; set;}
@@ -29,8 +34,9 @@ namespace Ansira.Objects
     public string Password {get; set;}
     public string PetOwnershipPlans {get; set;}
     public string AboutMe {get; set;}
+    [Required]
     [JsonProperty(PropertyName = "SourceID")]
-    public int? SourceId { get; set; }
+    public int SourceId { get; set; }
     public int? LastSourceID {get; set;}
     public int? RegistrationSourceId {get; set;}
     public DateTime? LastLogin { get; set; }

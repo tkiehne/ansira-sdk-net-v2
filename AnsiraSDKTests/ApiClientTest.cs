@@ -103,17 +103,20 @@ namespace AnsiraSDKTests
           Zip = "78701"
         }
       };
+      //user.Subscribe("FR", 11, sourceId);
 
       User returnUser = target.CreateUser(user);
 
       Assert.IsNotNull(returnUser, "CreateUser gets valid response");
       Assert.IsTrue(returnUser.Email == user.Email, "CreateUser returns updated object");
+      Assert.IsNotNull(returnUser.Uuid, "CreateUser sets UUID");
       Console.WriteLine("Returned Object: UUID = " + returnUser.Uuid);
 
       Console.WriteLine("Object created, attempting to update");
       returnUser.GivenName = "Updated";
       User updateUser = target.UpdateUser(returnUser);
       Assert.IsNotNull(updateUser, "UpdateUser gets valid response");
+      Assert.IsNotNull(updateUser.Uuid, "UpdateUser sets UUID");
       Assert.IsTrue(updateUser.GivenName == returnUser.GivenName, "UpdateUser returns updated object");
 
       Console.WriteLine("Object updated, attempting to delete");
@@ -122,6 +125,109 @@ namespace AnsiraSDKTests
       Console.WriteLine("Object deleted, attempting to retrieve");
       User deletedUser = target.FindUserByEmail(user.Email);
       Assert.IsNull(deletedUser, "FindUserByEmail does not retrieve deleted user?");
+    }
+
+    /// <summary>
+    ///A test for CreateUser with all available data
+    ///</summary>
+    [TestMethod()]
+    public void ExtendedCreateUserTest()
+    {
+      ApiClient target = new ApiClient(clientId, clientSecret, true);
+      User user = new User()
+      {
+        DisplayName = "test user",
+        FamilyName = "User",
+        MiddleName = "T",
+        GivenName = "Test",
+        SourceId = sourceId,
+        Email = Guid.NewGuid().ToString("N") + "@fosfor.us",
+        //EmailVerified = DateTime.Now, // API conflict - docs say [1|0], live API says date?
+        BirthDay = DateTime.Now.Date.AddYears(-25),
+        //AddressVerified = "0", // Not working
+        Gender = "M",
+        // Password
+        PetOwnershipPlans = "none",
+        AboutMe = "This is just a test",
+        Address = new Address()
+        {
+          Address1 = "209 E 6th",
+          Address2 = "Ste 200",
+          City = "Austin",
+          State = "TX",
+          Zip = "78701",
+          Company = "Test Company",
+          ZipPlus4 = "78701-0023",
+          Phone = "123-123-5432",
+          Mobile = "123-543-1234"
+        }
+      };
+      //user.Subscribe("FR", 11, sourceId);
+
+      user.Pets = new List<Pet>();
+
+      user.Pets.Add(new Pet()
+        {
+          SourceId = sourceId,
+          Name = "Tester",
+          PetTypeId = 1,
+          BreedId = 8,
+          DryFoodId = 4,
+          WetFoodId = 4,
+          DateOfBirth = DateTime.Now.Date.AddYears(-3).AddMonths(-12),
+          DateOfAdoption = DateTime.Now.Date.AddYears(-3).AddMonths(-1)
+        }
+      );
+
+      User returnUser = target.CreateUser(user);
+
+      Assert.IsNotNull(returnUser, "CreateUser gets valid response");
+      Assert.IsTrue(returnUser.DisplayName == user.DisplayName, "CreateUser returns correct data");
+      Assert.IsTrue(returnUser.FamilyName == user.FamilyName, "CreateUser returns correct data");
+      Assert.IsTrue(returnUser.MiddleName == user.MiddleName, "CreateUser returns correct data");
+      Assert.IsTrue(returnUser.GivenName == user.GivenName, "CreateUser returns correct data");
+      Assert.IsTrue(returnUser.SourceId == sourceId, "CreateUser returns correct data");
+      Assert.IsTrue(returnUser.Email == user.Email, "CreateUser returns correct data");
+      //Assert.IsTrue(returnUser.EmailVerified == user.EmailVerified, "CreateUser returns correct data");
+      Assert.IsTrue(returnUser.BirthDay == user.BirthDay, "CreateUser returns correct data");
+      //Assert.IsTrue(returnUser.AddressVerified == user.AddressVerified, "CreateUser returns correct data");
+      Assert.IsTrue(returnUser.Gender == user.Gender, "CreateUser returns correct data");
+      Assert.IsTrue(returnUser.PetOwnershipPlans == user.PetOwnershipPlans, "CreateUser returns correct data");
+      Assert.IsTrue(returnUser.AboutMe == user.AboutMe, "CreateUser returns correct data");
+
+      Assert.IsNotNull(returnUser.Address);
+      Assert.IsTrue(returnUser.Address.Address1 == user.Address.Address1, "CreateUser returns correct Address data");
+      Assert.IsTrue(returnUser.Address.Address2 == user.Address.Address2, "CreateUser returns correct Address data");
+      Assert.IsTrue(returnUser.Address.City == user.Address.City, "CreateUser returns correct Address data");
+      Assert.IsTrue(returnUser.Address.State == user.Address.State, "CreateUser returns correct Address data");
+      Assert.IsTrue(returnUser.Address.Zip == user.Address.Zip, "CreateUser returns correct Address data");
+      Assert.IsTrue(returnUser.Address.Company == user.Address.Company, "CreateUser returns correct Address data");
+      Assert.IsTrue(returnUser.Address.ZipPlus4 == user.Address.ZipPlus4, "CreateUser returns correct Address data");
+      Assert.IsTrue(returnUser.Address.Phone == "1231235432", "CreateUser returns correct Address data");
+      Assert.IsTrue(returnUser.Address.Mobile == "1235431234", "CreateUser returns correct Address data");
+
+      Assert.IsNotNull(returnUser.Pets);
+      Assert.IsNotNull(returnUser.Pets[0]);
+      Assert.IsTrue(returnUser.Pets[0].SourceId == sourceId, "CreateUser returns correct Pets data");
+      Assert.IsTrue(returnUser.Pets[0].Name == user.Pets[0].Name, "CreateUser returns correct Pets data");
+      Assert.IsTrue(returnUser.Pets[0].PetTypeId == user.Pets[0].PetTypeId, "CreateUser returns correct Pets data");
+      Assert.IsTrue(returnUser.Pets[0].BreedId == user.Pets[0].BreedId, "CreateUser returns correct Pets data");
+      Assert.IsTrue(returnUser.Pets[0].DryFoodId == user.Pets[0].DryFoodId, "CreateUser returns correct Pets data");
+      Assert.IsTrue(returnUser.Pets[0].WetFoodId == user.Pets[0].WetFoodId, "CreateUser returns correct Pets data");
+      Assert.IsTrue(returnUser.Pets[0].DateOfBirth == user.Pets[0].DateOfBirth, "CreateUser returns correct Pets data");
+      Assert.IsTrue(returnUser.Pets[0].DateOfAdoption == user.Pets[0].DateOfAdoption, "CreateUser returns correct Pets data");
+
+
+      Assert.IsNotNull(returnUser.Uuid, "CreateUser sets UUID");
+      Assert.IsNotNull(returnUser.Id, "CreateUser sets Id");
+      Assert.IsNotNull(returnUser.Address.Id, "CreateUser sets Address Id");
+      Assert.IsNotNull(returnUser.Address.UserId, "CreateUser sets Address UserId");
+      Assert.IsNotNull(returnUser.Pets[0].Id, "CreateUser sets Pet Id");
+      Assert.IsNotNull(returnUser.Pets[0].UserId, "CreateUser sets Pet UserId");
+      Console.WriteLine("Returned Object: UUID = " + returnUser.Uuid);
+
+      Console.WriteLine("Object updated, attempting to delete");
+      target.DeleteUser(returnUser);
     }
 
     /// <summary>
@@ -135,6 +241,7 @@ namespace AnsiraSDKTests
       User user = target.FindUserByEmail("tkiehne@fosforus.net");
 
       Assert.IsNotNull(user, "FindUserByEmail gets valid response");
+      Assert.IsNotNull(user.Uuid, "FindUserByEmail set UUID");
       Assert.IsTrue(user.Email == "tkiehne@fosforus.net", "FindUserByEmail returns valid object");
 
       Console.WriteLine("Object: UUID = " + user.Uuid);
@@ -151,6 +258,7 @@ namespace AnsiraSDKTests
       User user = target.FindUserByName("Kiehne", "Tom");
 
       Assert.IsNotNull(user, "FindUserByName gets valid response");
+      Assert.IsNotNull(user.Uuid, "FindUserByEmail set UUID");
       Assert.IsTrue(user.FamilyName == "Kiehne", "FindUserByName returns valid object");
 
       Console.WriteLine("Object: Email = " + user.Email);
@@ -167,6 +275,7 @@ namespace AnsiraSDKTests
       User user = target.FindUserByUuid("f3804062-8248-11e4-8559-22000a8b39f0");
 
       Assert.IsNotNull(user, "FindUserByUuid gets valid response");
+      Assert.IsNotNull(user.Uuid, "FindUserByEmail set UUID");
       Assert.IsTrue(user.Uuid == "f3804062-8248-11e4-8559-22000a8b39f0", "FindUserByUuid returns valid object");
 
       Console.WriteLine("Object: Email = " + user.Email);
@@ -307,6 +416,23 @@ namespace AnsiraSDKTests
       User user = new User(){ Id = 1551389, DisplayName = "test"};
       target.SignOutUser(user);
       Assert.Inconclusive("SignOutUser does not return a value and cannot be verified.");
+    }
+
+    [TestMethod()]
+    public void ProductionTest()
+    {
+      ApiClient target = new ApiClient(clientId, clientSecret, false);
+
+      User prodUser = target.FindUserByEmail("kiehnet@netscape.net");
+      Assert.IsNotNull(prodUser, "FindUserByEmail does not retrieve deleted user");
+
+      prodUser.DisplayName = "Updated";
+      prodUser.SourceId = sourceId;
+      User updateUser = target.UpdateUser(prodUser);
+      Assert.IsNotNull(updateUser, "UpdateUser gets valid response");
+      Assert.IsNotNull(updateUser.Uuid, "UpdateUser sets UUID");
+      Assert.IsTrue(updateUser.GivenName == prodUser.GivenName, "UpdateUser returns updated object");
+      
     }
   }
 }

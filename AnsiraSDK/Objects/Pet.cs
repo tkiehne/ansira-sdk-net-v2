@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
+using Ansira.Converters;
 
 namespace Ansira.Objects
 {
@@ -15,6 +17,7 @@ namespace Ansira.Objects
     public string Name { get; set; }
     [JsonProperty(PropertyName = "SourceID")]
     public int SourceId { get; set; }
+    [Required]
     [JsonProperty(PropertyName = "PetTypeID")]
     public int PetTypeId { get; set; }
     [JsonProperty(PropertyName = "BreedID")]
@@ -27,7 +30,9 @@ namespace Ansira.Objects
     public int WetFoodId { get; set; }
     public string WetFoodFrequency { get; set; }
     public string DryFoodFrequency { get; set; }
+    [JsonConverter(typeof(MonthDayYearDateConverter))]
     public DateTime? DateOfBirth { get; set; }
+    [JsonConverter(typeof(MonthDayYearDateConverter))]
     public DateTime? DateOfAdoption { get; set; }
     public DateTime? Created { get; set; }
     public DateTime? Updated { get; set; }
