@@ -103,7 +103,7 @@ namespace AnsiraSDKTests
           Zip = "78701"
         }
       };
-      //user.Subscribe("FR", 11, sourceId);
+      //user.Subscribe("FR", 11, sourceId); // TODO: breaks on update
 
       User returnUser = target.CreateUser(user);
 
@@ -142,11 +142,9 @@ namespace AnsiraSDKTests
         GivenName = "Test",
         SourceId = sourceId,
         Email = Guid.NewGuid().ToString("N") + "@fosfor.us",
-        //EmailVerified = DateTime.Now, // API conflict - docs say [1|0], live API says date?
-        BirthDay = DateTime.Now.Date.AddYears(-25),
-        //AddressVerified = "0", // Not working
-        Gender = "M",
-        // Password
+        //EmailVerified = "0", // API conflict - docs say [1|0], live API says date?
+        //AddressVerified = "1", // Not working
+        // Password should be handled via OAuth or similar, not via API
         PetOwnershipPlans = "none",
         AboutMe = "This is just a test",
         Address = new Address()
@@ -162,7 +160,7 @@ namespace AnsiraSDKTests
           Mobile = "123-543-1234"
         }
       };
-      //user.Subscribe("FR", 11, sourceId);
+      user.Subscribe("FR", 11, sourceId);
 
       user.Pets = new List<Pet>();
 
@@ -189,9 +187,7 @@ namespace AnsiraSDKTests
       Assert.IsTrue(returnUser.SourceId == sourceId, "CreateUser returns correct data");
       Assert.IsTrue(returnUser.Email == user.Email, "CreateUser returns correct data");
       //Assert.IsTrue(returnUser.EmailVerified == user.EmailVerified, "CreateUser returns correct data");
-      Assert.IsTrue(returnUser.BirthDay == user.BirthDay, "CreateUser returns correct data");
       //Assert.IsTrue(returnUser.AddressVerified == user.AddressVerified, "CreateUser returns correct data");
-      Assert.IsTrue(returnUser.Gender == user.Gender, "CreateUser returns correct data");
       Assert.IsTrue(returnUser.PetOwnershipPlans == user.PetOwnershipPlans, "CreateUser returns correct data");
       Assert.IsTrue(returnUser.AboutMe == user.AboutMe, "CreateUser returns correct data");
 

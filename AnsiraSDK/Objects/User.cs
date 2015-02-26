@@ -26,9 +26,6 @@ namespace Ansira.Objects
     public string GivenName {get; set;}
     public Address Address { get; set; }
     public string AddressVerified { get; set; }
-    [JsonConverter(typeof(MonthDayYearDateConverter))]
-    public DateTime? BirthDay {get; set;}
-    public string Gender {get; set;}
     public string DisplayName {get; set;}
     public string Display {get; set;}
     public string Password {get; set;}
