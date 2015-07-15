@@ -252,7 +252,7 @@ namespace Ansira
       {
         ResponseV3 response = JsonConvert.DeserializeObject<ResponseV3>(results); // TEMP?
         User responseUser = JsonConvert.DeserializeObject<User>(JsonConvert.SerializeObject(response.Record.Results));
-        responseUser.Uuid = user.Uuid; // TODO: question to Ansira as to why UUID is omitted
+        //responseUser.Uuid = user.Uuid; // TODO: question to Ansira as to why UUID is omitted
         return responseUser;
       }
       else

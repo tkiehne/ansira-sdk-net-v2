@@ -15,7 +15,7 @@ namespace Ansira.Objects
     public int Id { get; set; }
     public string Name { get; set; }
     [JsonProperty(PropertyName = "PetTypeID")]
-    public int PetTypeId { get; set; }
+    public int? PetTypeId { get; set; }
     public string ImagePath { get; set; }
   }
 }

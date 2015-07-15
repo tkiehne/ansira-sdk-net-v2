@@ -25,6 +25,6 @@ namespace Ansira.Objects
     public DateTime EmailDate { get; set; }
     public string MobileStatus { get; set; }
     public DateTime? MobileDate { get; set; }
-    public int EmailTriggerFlag { get; set; }
+    public int? EmailTriggerFlag { get; set; }
   }
 }

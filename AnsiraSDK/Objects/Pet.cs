@@ -19,15 +19,15 @@ namespace Ansira.Objects
     public int SourceId { get; set; }
     [Required]
     [JsonProperty(PropertyName = "PetTypeID")]
-    public int PetTypeId { get; set; }
+    public int? PetTypeId { get; set; }
     [JsonProperty(PropertyName = "BreedID")]
-    public int BreedId { get; set; }
+    public int? BreedId { get; set; }
     [JsonProperty(PropertyName = "FoodID")]
     public int? FoodId { get; set; }
     [JsonProperty(PropertyName = "DryFoodID")]
-    public int DryFoodId { get; set; }
+    public int? DryFoodId { get; set; }
     [JsonProperty(PropertyName = "WetFoodID")]
-    public int WetFoodId { get; set; }
+    public int? WetFoodId { get; set; }
     public string WetFoodFrequency { get; set; }
     public string DryFoodFrequency { get; set; }
     [JsonConverter(typeof(MonthDayYearDateConverter))]

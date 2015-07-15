@@ -103,7 +103,7 @@ namespace AnsiraSDKTests
           Zip = "78701"
         }
       };
-      //user.Subscribe("FR", 11, sourceId); // TODO: breaks on update
+      user.Subscribe("FR", 11, sourceId); // TODO: breaks on update
 
       User returnUser = target.CreateUser(user);
 
@@ -161,6 +161,8 @@ namespace AnsiraSDKTests
         }
       };
       user.Subscribe("FR", 11, sourceId);
+      user.Subscribe("PU", 18, sourceId);
+      user.Subscribe("PE", 1, sourceId);
 
       user.Pets = new List<Pet>();
 
@@ -300,6 +302,7 @@ namespace AnsiraSDKTests
       };
 
       user.Subscribe("FR", 11, this.sourceId);
+      user.Subscribe("PE", 1, this.sourceId);
 
       Assert.IsNotNull(user.Subscriptions);
       Assert.IsInstanceOfType(user.Subscriptions["FR"], typeof(Subscription));

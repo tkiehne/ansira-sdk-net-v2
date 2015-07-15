@@ -28,6 +28,6 @@ namespace Ansira.Objects
     public string RegistrationURL { get; set; }
     public string HelpURL { get; set; }
     public int? ParentID { get; set; }
-    public int PetTypeId { get; set; } // used only for get[Dry|Wet]FoodBrands
+    public int? PetTypeId { get; set; } // used only for get[Dry|Wet]FoodBrands
   }
 }
