@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("AnsiraSDK")]
-[assembly: AssemblyDescription(".NET objects for accessing Ansira's contact API")]
+[assembly: AssemblyTitle("AnsiraSDK2")]
+[assembly: AssemblyDescription(".NET objects for accessing Ansira's contact API v.2")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Fosforus, Inc.")]
-[assembly: AssemblyProduct("AnsiraSDK")]
-[assembly: AssemblyCopyright("Copyright ©  2014")]
+[assembly: AssemblyProduct("AnsiraSDK2")]
+[assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
