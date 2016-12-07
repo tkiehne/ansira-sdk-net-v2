@@ -8,9 +8,9 @@ using System.ComponentModel.DataAnnotations;
 namespace Ansira.Objects
 {
     /// <summary>
-    /// Ansira Pet Type class
+    /// Ansira Pet Food class
     /// </summary>
-    public class PetType
+    public class PetFood
     {
         [JsonProperty(PropertyName = "id")]
         public int Id { get; set; }
@@ -18,11 +18,15 @@ namespace Ansira.Objects
         [JsonProperty(PropertyName = "keyName")]
         public string KeyName { get; set; }
         [Required(AllowEmptyStrings = false)]
-        [JsonProperty(PropertyName = "name")]
-        public string Name { get; set; }
+        [JsonProperty(PropertyName = "foodType")]
+        public string FoodType { get; set; }
+        [Required(AllowEmptyStrings = false)]
+        [JsonProperty(PropertyName = "description")]
+        public string Description { get; set; }
 
         // TODO: validation
-        // keyName {not blank}, {length: min: 2, max: 45}, {match: /^[A-Z_]+$/}
-        // name {not blank}, {length: min: 2, max: 45}
+        // keyName {not blank}, {length: min: 2, max: 45}
+        // foodType {not blank}, {length: min: 2, max: 45}
+        // description {not blank}, {length: min: 2, max: 255}
     }
 }

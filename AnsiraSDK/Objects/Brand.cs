@@ -6,28 +6,24 @@ using Newtonsoft.Json;
 
 namespace Ansira.Objects
 {
-  /// <summary>
-  /// Ansira API Brand class
-  /// </summary>
-  public class Brand
-  {
-    [JsonProperty(PropertyName="ID")]
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public string RichName { get; set; }
-    public string Code { get; set; }
-    public string Domain { get; set; }
-    public string TelerxCode { get; set; }
-    public string LogoName { get; set; }
-    [JsonProperty(PropertyName="logoUrl")]
-    public string LogoUrl { get; set; }
-    [JsonProperty(PropertyName="redirect_uri")]
-    public string RedirectUri { get; set; }
-    //public DateTime? Created { get; set; } // killed due to invalid data in UAT (zeros)
-    //public DateTime? Updated { get; set; }
-    public string RegistrationURL { get; set; }
-    public string HelpURL { get; set; }
-    public int? ParentID { get; set; }
-    public int? PetTypeId { get; set; } // used only for get[Dry|Wet]FoodBrands
-  }
-}
+    /// <summary>
+    /// Ansira API Brand class
+    /// </summary>
+    public class Brand
+    {
+        [JsonProperty(PropertyName = "id")]
+        public int Id { get; set; }
+        [JsonProperty(PropertyName = "name")]
+        public string Name { get; set; }
+        [JsonProperty(PropertyName = "richName")]
+        public string RichName { get; set; }
+        [JsonProperty(PropertyName = "keyName")]
+        public string KeyName { get; set; }
+        [JsonProperty(PropertyName = "website")]
+        public string Website { get; set; }
+        [JsonProperty(PropertyName = "primaryApplication")]
+        public Application PrimaryApplication { get; set; }
+        [JsonProperty(PropertyName = "enabled")]
+        public bool Enabled { get; set; }
+    }
+}  

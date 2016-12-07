@@ -8,21 +8,19 @@ using System.ComponentModel.DataAnnotations;
 namespace Ansira.Objects
 {
     /// <summary>
-    /// Ansira Pet Type class
+    /// Country class for Ansira Address
     /// </summary>
-    public class PetType
+    public class Country
     {
-        [JsonProperty(PropertyName = "id")]
-        public int Id { get; set; }
-        [Required(AllowEmptyStrings = false)]
-        [JsonProperty(PropertyName = "keyName")]
-        public string KeyName { get; set; }
-        [Required(AllowEmptyStrings = false)]
         [JsonProperty(PropertyName = "name")]
+        [Required(AllowEmptyStrings = false)]
         public string Name { get; set; }
+        [JsonProperty(PropertyName = "keyName")]
+        [Required(AllowEmptyStrings = false)]
+        public string KeyName { get; set; } // ISO 3166-1 alpha-2 country code
 
         // TODO: validation
-        // keyName {not blank}, {length: min: 2, max: 45}, {match: /^[A-Z_]+$/}
-        // name {not blank}, {length: min: 2, max: 45}
+        // name {not blank}, {length: min: 2, max: 45}	
+        // keyName {not blank}, {length: min: 2, max: 5}, {match: /^[A-Z_]+$/}
     }
 }
