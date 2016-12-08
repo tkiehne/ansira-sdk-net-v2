@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 
 namespace Ansira.Objects
 {
@@ -13,16 +14,23 @@ namespace Ansira.Objects
     {
         [JsonProperty(PropertyName = "id")]
         public int Id { get; set; }
+
         [JsonProperty(PropertyName = "name")]
         public string Name { get; set; }
+
         [JsonProperty(PropertyName = "richName")]
         public string RichName { get; set; }
+
         [JsonProperty(PropertyName = "keyName")]
         public string KeyName { get; set; }
+
         [JsonProperty(PropertyName = "website")]
+        [Url]
         public string Website { get; set; }
+
         [JsonProperty(PropertyName = "primaryApplication")]
         public Application PrimaryApplication { get; set; }
+
         [JsonProperty(PropertyName = "enabled")]
         public bool Enabled { get; set; }
     }

@@ -17,9 +17,10 @@ namespace Ansira.Objects
         [MinLength(2)]
         [MaxLength(45)]
         public string Name { get; set; }
+
         [JsonProperty(PropertyName = "keyName")]
         [Required(AllowEmptyStrings = false)]
-        [RegularExpression(@"^[A-Z_]{2,45}$", ErrorMessage = "Invalid Country Key Name")]
+        [RegularExpression(@"^[A-Z]{2}$", ErrorMessage = "Invalid Country Key Name")]
         public string KeyName { get; set; } // ISO 3166-1 alpha-2 country code
     }
 }

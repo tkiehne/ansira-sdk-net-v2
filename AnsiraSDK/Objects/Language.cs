@@ -8,26 +8,25 @@ using System.ComponentModel.DataAnnotations;
 namespace Ansira.Objects
 {
     /// <summary>
-    /// Ansira animal breed class
+    /// Ansira Language class
     /// </summary>
-    public class Breed
+    public class Language
     {
         [JsonProperty(PropertyName = "id")]
         public int Id { get; set; }
 
         [JsonProperty(PropertyName = "keyName")]
         [Required(AllowEmptyStrings = false)]
-        [RegularExpression(@"^[A-Z_]{2,45}$", ErrorMessage = "Invalid Breed Key Name")]
-        public string KeyName { get; set; }
+        [RegularExpression(@"^[a-z]{2}$", ErrorMessage = "Invalid Language Key Name")]
+        public string KeyName { get; set; } // ISO 639-1 language code
 
         [JsonProperty(PropertyName = "name")]
         [Required(AllowEmptyStrings = false)]
         [MinLength(2)]
         [MaxLength(45)]
-        [RegularExpression(@"^[^\s\'\x22\,\.]+$", ErrorMessage = "Invalid Breed Name")]
         public string Name { get; set; }
 
-        [JsonProperty(PropertyName = "petType")]
-        public PetType PetType { get; set; }
+        [JsonProperty(PropertyName = "englishName")]
+        public string EnglishName { get; set; }
     }
 }

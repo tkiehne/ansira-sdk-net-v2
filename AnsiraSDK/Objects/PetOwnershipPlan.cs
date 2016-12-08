@@ -8,26 +8,24 @@ using System.ComponentModel.DataAnnotations;
 namespace Ansira.Objects
 {
     /// <summary>
-    /// Ansira animal breed class
+    /// Ansira Pet Ownership Plan class
     /// </summary>
-    public class Breed
+    public class PetOwnershipPlan
     {
         [JsonProperty(PropertyName = "id")]
         public int Id { get; set; }
 
         [JsonProperty(PropertyName = "keyName")]
         [Required(AllowEmptyStrings = false)]
-        [RegularExpression(@"^[A-Z_]{2,45}$", ErrorMessage = "Invalid Breed Key Name")]
+        [MinLength(2)]
+        [MaxLength(45)]
+        [RegularExpression(@"^[A-Z_]+$", ErrorMessage = "Invalid Plan Key Name")]
         public string KeyName { get; set; }
 
         [JsonProperty(PropertyName = "name")]
         [Required(AllowEmptyStrings = false)]
         [MinLength(2)]
         [MaxLength(45)]
-        [RegularExpression(@"^[^\s\'\x22\,\.]+$", ErrorMessage = "Invalid Breed Name")]
         public string Name { get; set; }
-
-        [JsonProperty(PropertyName = "petType")]
-        public PetType PetType { get; set; }
     }
 }
