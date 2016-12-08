@@ -19,7 +19,7 @@ namespace Ansira.Objects
         [JsonProperty(PropertyName = "name")]
         [MinLength(1)]
         [MaxLength(100)]
-        [RegularExpression(@"^[^\s\'\x22\,\.\-]+$", ErrorMessage = "Invalid Breed Name")]
+        [RegularExpression(@"^[^\s\'\x22\,\.\-]+$", ErrorMessage = "Invalid Name")]
         public string Name { get; set; }
 
         [JsonProperty(PropertyName = "imageUrl")]
@@ -31,7 +31,7 @@ namespace Ansira.Objects
         [JsonProperty(PropertyName = "size")]
         [MinLength(1)]
         [MaxLength(45)]
-        [RegularExpression(@"^[^\s\'\x22\,\.]+$", ErrorMessage = "Invalid Breed Name")]
+        [RegularExpression(@"^[^\s\'\x22\,\.]+$", ErrorMessage = "Invalid Size")]
         public string Size { get; set; }
 
         [JsonProperty(PropertyName = "acquisitionMethod")]
@@ -52,7 +52,7 @@ namespace Ansira.Objects
         [JsonProperty(PropertyName = "color")]
         [MinLength(2)]
         [MaxLength(45)]
-        [RegularExpression(@"^[^\s\'\x22\,\.]+$", ErrorMessage = "Invalid Breed Name")]
+        [RegularExpression(@"^[^\s\'\x22\,\.]+$", ErrorMessage = "Invalid Color")]
         public string Color { get; set; }
 
         [JsonProperty(PropertyName = "gender")]
@@ -69,7 +69,7 @@ namespace Ansira.Objects
         public Breed SecondaryBreed { get; set; }
 
         [JsonProperty(PropertyName = "petType")]
-        public PetType PetType { get; set; }
+        public PetType Species { get; set; }
 
         [JsonProperty(PropertyName = "foodPrefWet")]
         public PetFood FoodPrefWet { get; set; }

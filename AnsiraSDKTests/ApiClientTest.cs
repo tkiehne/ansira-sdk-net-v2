@@ -10,14 +10,11 @@ namespace AnsiraSDKTests
 
 
     /// <summary>
-    ///This is a test class for ApiClientTest and is intended
-    ///to contain all ApiClientTest Unit Tests
+    ///This is a test class for Ansira Api ClientTest
     ///</summary>
     [TestClass()]
     public class ApiClientTest
     {
-
-
         private TestContext testContextInstance;
 
         private string clientId, clientSecret;
@@ -102,7 +99,6 @@ namespace AnsiraSDKTests
                     PostalCode = "78701"
                 }
             };
-            //user.Subscribe("FR", 11, sourceId); // TODO: breaks on update
 
             User returnUser = target.CreateUser(user);
 
@@ -116,7 +112,7 @@ namespace AnsiraSDKTests
             User updateUser = target.UpdateUser(returnUser);
             Assert.IsNotNull(updateUser, "UpdateUser gets valid response");
             Assert.IsNotNull(updateUser.Uuid, "UpdateUser sets UUID");
-            Assert.IsTrue(updateUser.FirstName == returnUser.LastName, "UpdateUser returns updated object");
+            Assert.IsTrue(updateUser.FirstName == returnUser.FirstName, "UpdateUser returns updated object");
 
             Console.WriteLine("Object updated, attempting to delete");
             target.DeleteUser(returnUser);
@@ -140,10 +136,14 @@ namespace AnsiraSDKTests
                 FirstName = "Test",
                 SourceCode = sourceCode,
                 Email = Guid.NewGuid().ToString("N") + "@fosfor.us",
-                //EmailVerified = "0", // API conflict - docs say [1|0], live API says date?
-                //AddressVerified = "1", // Not working
                 // Password should be handled via OAuth or similar, not via API
-                //PetOwnershipPlans = "none",
+                DogCount = 1,
+                CatCount = 0,
+                TotalPets = 1,
+                //PetOwnershipPlan
+                //Language,
+                //Nationality,
+                //Currency,
                 Address = new Address()
                 {
                     Address1 = "209 E 6th",
@@ -153,27 +153,33 @@ namespace AnsiraSDKTests
                     PostalCode = "78701",
                     PrimaryPhone = "123-123-5432",
                     AltPhone = "123-543-1234",
-                    Country = new Country() { Name = "United States", KeyName = "US" }
+                    Fax = "123-123-8765",
+                    Country = new Country() { Name = "United States", KeyName = "US" },
+                    Latitude = 30.267298,
+                    Longitude = -97.7433287
                 }
             };
-            //user.Subscribe("FR", 11, sourceId);
-            //user.Subscribe("PU", 18, sourceId);
-            //user.Subscribe("PE", 1, sourceId);
 
-            ///user.Pets = new List<Pet>();
+            user.Pets = new List<Pet>();
 
-            /*user.Pets.Add(new Pet()
+            user.Pets.Add(new Pet()
             {
-                SourceId = sourceId,
+                SourceCode = sourceCode,
                 Name = "Tester",
-                PetTypeId = 1,
-                BreedId = 8,
-                DryFoodId = 4,
-                WetFoodId = 4,
-                DateOfBirth = DateTime.Now.Date.AddYears(-3).AddMonths(-12),
-                DateOfAdoption = DateTime.Now.Date.AddYears(-3).AddMonths(-1)
+                ImageUrl = "https://www.purina.com/media/284062/Akitas_2913.jpg/560/0/center/middle",
+                Size = "Large",
+                Color = "Brown",
+                IsSterile = false,
+                Gender = "female",
+                DateOfBirth = DateTime.Now.Date.AddMonths(-11),
+                AgeInMonths = 11,
+                DateOfAdoption = DateTime.Now.Date.AddMonths(-1),
+                AcquisitionMethod = "test",
+                DiscoveryMethod = "test",
+                DiscoveryMethodDetail = "This is not a real pet, just a test"
+                //Species, PrimaryBreed, SecondaryBreed, FoodPrefDry, FoodPrefWet
             }
-            );*/
+            );
 
             User returnUser = target.CreateUser(user);
 
@@ -183,7 +189,13 @@ namespace AnsiraSDKTests
             Assert.IsTrue(returnUser.FirstName == user.FirstName, "CreateUser returns correct data");
             Assert.IsTrue(returnUser.SourceCode.Id == sourceCode.Id, "CreateUser returns correct data");
             Assert.IsTrue(returnUser.Email == user.Email, "CreateUser returns correct data");
-            //Assert.IsTrue(returnUser.PetOwnershipPlans == user.PetOwnershipPlans, "CreateUser returns correct data");
+            Assert.IsTrue(returnUser.DogCount == user.DogCount, "CreateUser returns correct data");
+            Assert.IsTrue(returnUser.CatCount == user.CatCount, "CreateUser returns correct data");
+            Assert.IsTrue(returnUser.TotalPets == user.TotalPets, "CreateUser returns correct data");
+            //Assert.IsTrue(returnUser.PetOwnershipPlan.KeyName == user.PetOwnershipPlan.KeyName, "CreateUser returns correct data");
+            //Assert.IsTrue(returnUser.Language.KeyName == user.Language.KeyName, "CreateUser returns correct data");
+            //Assert.IsTrue(returnUser.Nationality.KeyName == user.Nationality.KeyName, "CreateUser returns correct data");
+            //Assert.IsTrue(returnUser.Currency.KeyName == user.Currency.KeyName, "CreateUser returns correct data");
 
             Assert.IsNotNull(returnUser.Address);
             Assert.IsTrue(returnUser.Address.Address1 == user.Address.Address1, "CreateUser returns correct Address data");
@@ -193,24 +205,38 @@ namespace AnsiraSDKTests
             Assert.IsTrue(returnUser.Address.PostalCode == user.Address.PostalCode, "CreateUser returns correct Address data");
             Assert.IsTrue(returnUser.Address.PrimaryPhone == "1231235432", "CreateUser returns correct Address data");
             Assert.IsTrue(returnUser.Address.AltPhone == "1235431234", "CreateUser returns correct Address data");
+            Assert.IsTrue(returnUser.Address.Fax == "1231238765", "CreateUser returns correct Address data");
+            //Assert.IsTrue(returnUser.Address.Country == user.Address.Country, "CreateUser returns correct Address data");
+            Assert.IsTrue(returnUser.Address.Latitude == user.Address.Latitude, "CreateUser returns correct Address data");
+            Assert.IsTrue(returnUser.Address.Longitude == user.Address.Longitude, "CreateUser returns correct Address data");
 
-            /*Assert.IsNotNull(returnUser.Pets);
+            Assert.IsNotNull(returnUser.Pets);
             Assert.IsNotNull(returnUser.Pets[0]);
-            Assert.IsTrue(returnUser.Pets[0].SourceId == sourceId, "CreateUser returns correct Pets data");
+            Assert.IsTrue(returnUser.Pets[0].SourceCode.KeyName == sourceCode.KeyName, "CreateUser returns correct Pets data");
             Assert.IsTrue(returnUser.Pets[0].Name == user.Pets[0].Name, "CreateUser returns correct Pets data");
-            Assert.IsTrue(returnUser.Pets[0].PetTypeId == user.Pets[0].PetTypeId, "CreateUser returns correct Pets data");
-            Assert.IsTrue(returnUser.Pets[0].BreedId == user.Pets[0].BreedId, "CreateUser returns correct Pets data");
-            Assert.IsTrue(returnUser.Pets[0].DryFoodId == user.Pets[0].DryFoodId, "CreateUser returns correct Pets data");
-            Assert.IsTrue(returnUser.Pets[0].WetFoodId == user.Pets[0].WetFoodId, "CreateUser returns correct Pets data");
+            Assert.IsTrue(returnUser.Pets[0].ImageUrl == user.Pets[0].ImageUrl, "CreateUser returns correct Pets data");
+            Assert.IsTrue(returnUser.Pets[0].Size == user.Pets[0].Size, "CreateUser returns correct Pets data");
+            Assert.IsTrue(returnUser.Pets[0].Color == user.Pets[0].Color, "CreateUser returns correct Pets data");
+            Assert.IsTrue(returnUser.Pets[0].IsSterile == user.Pets[0].IsSterile, "CreateUser returns correct Pets data");
+            Assert.IsTrue(returnUser.Pets[0].Gender == user.Pets[0].Gender, "CreateUser returns correct Pets data");
+            Assert.IsTrue(returnUser.Pets[0].AgeInMonths == user.Pets[0].AgeInMonths, "CreateUser returns correct Pets data");
+            Assert.IsTrue(returnUser.Pets[0].AcquisitionMethod == user.Pets[0].AcquisitionMethod, "CreateUser returns correct Pets data");
+            Assert.IsTrue(returnUser.Pets[0].DiscoveryMethod == user.Pets[0].DiscoveryMethod, "CreateUser returns correct Pets data");
+            Assert.IsTrue(returnUser.Pets[0].DiscoveryMethodDetail == user.Pets[0].DiscoveryMethodDetail, "CreateUser returns correct Pets data");
+            //Assert.IsTrue(returnUser.Pets[0].Species.KeyName == user.Pets[0].Species.KeyName, "CreateUser returns correct Pets data");
+            //Assert.IsTrue(returnUser.Pets[0].PrimaryBreed.KeyName == user.Pets[0].PrimaryBreed.KeyName, "CreateUser returns correct Pets data");
+            //Assert.IsTrue(returnUser.Pets[0].SecondaryBreed.KeyName == user.Pets[0].SecondaryBreed.KeyName, "CreateUser returns correct Pets data");
+            //Assert.IsTrue(returnUser.Pets[0].FoodPrefDry.KeyName == user.Pets[0].FoodPrefDry.KeyName, "CreateUser returns correct Pets data");
+            //Assert.IsTrue(returnUser.Pets[0].FoodPrefWet.KeyName == user.Pets[0].FoodPrefWet.KeyName, "CreateUser returns correct Pets data");
             Assert.IsTrue(returnUser.Pets[0].DateOfBirth == user.Pets[0].DateOfBirth, "CreateUser returns correct Pets data");
-            Assert.IsTrue(returnUser.Pets[0].DateOfAdoption == user.Pets[0].DateOfAdoption, "CreateUser returns correct Pets data");*/
+            Assert.IsTrue(returnUser.Pets[0].DateOfAdoption == user.Pets[0].DateOfAdoption, "CreateUser returns correct Pets data");
 
 
             Assert.IsNotNull(returnUser.Uuid, "CreateUser sets UUID");
             Assert.IsNotNull(returnUser.Id, "CreateUser sets Id");
             Assert.IsNotNull(returnUser.Address.Id, "CreateUser sets Address Id");
-            //Assert.IsNotNull(returnUser.Pets[0].Id, "CreateUser sets Pet Id");
-            //Assert.IsNotNull(returnUser.Pets[0].UserId, "CreateUser sets Pet UserId");
+            Assert.IsNotNull(returnUser.Pets[0].Id, "CreateUser sets Pet Id");
+            Assert.IsNotNull(returnUser.Pets[0].UserId, "CreateUser sets Pet UserId");
             Console.WriteLine("Returned Object: UUID = " + returnUser.Uuid);
 
             Console.WriteLine("Object updated, attempting to delete");
@@ -274,6 +300,8 @@ namespace AnsiraSDKTests
         [TestMethod()]
         public void SubscribeUserTest()
         {
+            ApiClient target = new ApiClient(clientId, clientSecret, true);
+
             User user = new User()
             {
                 LastName = "User",
@@ -289,20 +317,23 @@ namespace AnsiraSDKTests
                 }
             };
 
-            //user.Subscribe("FR", 11, this.sourceId);
-            //user.Subscribe("PE", 1, this.sourceId);
+            User returnUser = target.CreateUser(user);
 
-            /*Assert.IsNotNull(user.Subscriptions);
-            Assert.IsInstanceOfType(user.Subscriptions["FR"], typeof(Subscription));
-            Assert.IsTrue(user.Subscriptions["FR"].BrandId == 11);
-            Assert.IsTrue(user.Subscriptions["FR"].EmailStatus == "1");
+            // subscribe
+            Assert.IsTrue(target.CreateUserSubscription((int)returnUser.Id, new List<string>() { "FR", "PE" }));
 
-            user.Unsubscribe("FR", 11, this.sourceId);
+            List<string> subs = target.FindSubscriptionsByUserId((int)returnUser.Id) as List<string>;
+            Assert.IsTrue(subs.Contains("FR"));
+            Assert.IsTrue(subs.Contains("PE"));
 
-            Assert.IsNotNull(user.Subscriptions);
-            Assert.IsInstanceOfType(user.Subscriptions["FR"], typeof(Subscription));
-            Assert.IsTrue(user.Subscriptions["FR"].BrandId == 11);
-            Assert.IsTrue(user.Subscriptions["FR"].EmailStatus == "0"); */
+            // unsubscribe
+            Assert.IsTrue(target.DeleteUserSubscription((int)returnUser.Id, new List<string>() { "FR" }));
+
+            subs = target.FindSubscriptionsByUserId((int)returnUser.Id) as List<string>;
+            Assert.IsFalse(subs.Contains("FR"));
+            Assert.IsTrue(subs.Contains("PE"));
+
+            // Update (PUT / PATCH)? Do these replace or just add?
         }
 
         /// <summary>
@@ -358,7 +389,7 @@ namespace AnsiraSDKTests
             User prodUser = target.FindUserByEmail("kiehnet@netscape.net");
             Assert.IsNotNull(prodUser, "FindUserByEmail does not retrieve deleted user");
             
-            //prodUser.SourceId = sourceId;
+            prodUser.FirstName = Guid.NewGuid().ToString("N");
             User updateUser = target.UpdateUser(prodUser);
             Assert.IsNotNull(updateUser, "UpdateUser gets valid response");
             Assert.IsNotNull(updateUser.Uuid, "UpdateUser sets UUID");

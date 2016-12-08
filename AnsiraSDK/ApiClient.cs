@@ -569,11 +569,42 @@ namespace Ansira
 
         #region Subscription Methods
 
-        // /api/v2/users/{user_id}/subscriptions
-        // DELETE /api/v2/users/{user_id}/subscriptions Unsubscribe user
-        public object DeleteUserSubscription(int userId)
+        /// <summary>
+        /// Delete Subscriptions for a User in the Ansira API
+        /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#delete--api-v2-users-{user_id}-subscriptions</remarks>
+        /// <param name="userId">User ID integer</param>
+        /// <param name="brandCodes">List of brand codes</param>
+        /// <returns>True if successful or false if error</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when User ID is null or brandCodes is null or empty</exception>
+        public bool DeleteUserSubscription(int userId, List<string> brandCodes)
         {
-            return new NotImplementedException();
+            if (String.IsNullOrEmpty(userId.ToString()))
+            {
+                throw new ArgumentNullException("userId", "ID must not be null");
+            }
+            if (brandCodes == null || brandCodes.Count < 1)
+            {
+                throw new ArgumentNullException("brandCodes", "Must supply at least one brand code");
+            }
+            NameValueCollection data = new NameValueCollection();
+
+            // assuming URL-type array and not JSON
+            for (var i = 0; i < brandCodes.Count - 1; i++)
+            {
+                data.Add("subscriptions[" + i + "]", brandCodes[i]);
+            }
+
+            string method = String.Format("users/{0}/subscriptions", userId);
+            string results = CallApiDelete(method, data);
+            if (results != null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -609,10 +640,43 @@ namespace Ansira
         {
             return new NotImplementedException();
         }
-        // POST /api/v2/users/{user_id}/subscriptions Create user subscription
-        public object CreateUserSubscription(int userId)
+
+        /// <summary>
+        /// Create a new Subscription for a User in the Ansira API
+        /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#post--api-v2-users-{user_id}-subscriptions</remarks>
+        /// <param name="userId">User ID integer</param>
+        /// <param name="brandCodes">List of brand codes</param>
+        /// <returns>True if successful or false if error</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when User ID is null or brandCodes is null or empty</exception>
+        public bool CreateUserSubscription(int userId, List<string> brandCodes)
         {
-            return new NotImplementedException();
+            if (String.IsNullOrEmpty(userId.ToString()))
+            {
+                throw new ArgumentNullException("userId", "ID must not be null");
+            }
+            if(brandCodes == null || brandCodes.Count < 1)
+            {
+                throw new ArgumentNullException("brandCodes", "Must supply at least one brand code");
+            }
+            NameValueCollection data = new NameValueCollection();
+
+            // assuming URL-type array and not JSON
+            for (var i = 0; i < brandCodes.Count - 1; i++)
+            {
+                data.Add("subscriptions[" + i + "]", brandCodes[i]);
+            }
+            
+            string method = String.Format("users/{0}/subscriptions", userId);
+            string results = CallApiPost(method, data);
+            if (results != null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         // /api/v2/users/{user_id}/subscriptions/{brand_code}

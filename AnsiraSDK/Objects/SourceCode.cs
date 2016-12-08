@@ -23,7 +23,7 @@ namespace Ansira.Objects
         [Required(AllowEmptyStrings = false)]
         [MinLength(2)]
         [MaxLength(50)]
-        [RegularExpression(@"^[A-Za-z0-9_]+$", ErrorMessage = "Invalid Pet Type Key Name")]
+        [RegularExpression(@"^[A-Za-z0-9_]+$", ErrorMessage = "Invalid Source Key Name")]
         public string KeyName { get; set; }
 
         [JsonProperty(PropertyName = "isActive")]
