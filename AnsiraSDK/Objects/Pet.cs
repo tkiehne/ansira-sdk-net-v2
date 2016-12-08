@@ -15,18 +15,39 @@ namespace Ansira.Objects
         [JsonProperty(PropertyName = "user_id")]
         public int? UserId { get; set; }
         [JsonProperty(PropertyName = "name")]
+        [MinLength(1)]
+        [MaxLength(100)]
+        // negate [RegularExpression(@"[^A-Za-z0-9\s\'\x22\,\.\-]", ErrorMessage = "Invalid Breed Name")]
         public string Name { get; set; }
         [JsonProperty(PropertyName = "imageUrl")]
+        [MinLength(1)]
+        [MaxLength(255)]
+        [Url]
         public string ImageUrl { get; set; }
         [JsonProperty(PropertyName = "size")]
+        [MinLength(1)]
+        [MaxLength(45)]
+        // negate [RegularExpression(@"[^A-Za-z0-9\s\'\x22\,\.]", ErrorMessage = "Invalid Breed Name")]
         public string Size { get; set; }
         [JsonProperty(PropertyName = "acquisitionMethod")]
+        [MinLength(2)]
+        [MaxLength(45)]
         public string AcquisitionMethod { get; set; }
         [JsonProperty(PropertyName = "discoveryMethod")]
+        [MinLength(2)]
+        [MaxLength(45)]
         public string DiscoveryMethod { get; set; }
+        [JsonProperty(PropertyName = "discoveryMethodDetail")]
+        [MinLength(2)]
+        [MaxLength(65535)]
+        public string DiscoveryMethodDetail { get; set; }
         [JsonProperty(PropertyName = "color")]
+        [MinLength(2)]
+        [MaxLength(45)]
+        // negate [RegularExpression(@"[^A-Za-z0-9\s\'\x22\,\.]", ErrorMessage = "Invalid Breed Name")]
         public string Color { get; set; }
         [JsonProperty(PropertyName = "gender")]
+        [RegularExpression(@"^(?i)((fe)?male)$", ErrorMessage = "Invalid Gender")]
         public string Gender { get; set; }
         [JsonProperty(PropertyName = "ageInMonths")]
         public int AgeInMonths { get; set; }
@@ -50,17 +71,5 @@ namespace Ansira.Objects
         public DateTime? DateOfAdoption { get; set; }
         [JsonProperty(PropertyName = "sourceCode")]
         public SourceCode SourceCode { get; set; }
-
-        // TODO: Validation
-        // name {length: min: 1, max: 100}, {not match: /[^A-Za-z0-9\s\'\x22\,\.\-]/}
-        // imageUrl {URL, length: min: 1, max: 255}
-        // size {length: min: 1, max: 45}, {not match: /[^A-Za-z0-9\s\'\x22\,\.]/}	
-        // birthDate {Date YYYY-MM-DD}
-        // adoptionDate {Date YYYY-MM-DD}
-        // acquisitionMethod {length: min: 2, max: 45}
-        // discoveryMethod {length: min: 2, max: 45}
-        // discoveryMethodDetail {length: min: 2, max: 65535} 
-        // color {length: min: 2, max: 45}, {not match: /[^A-Za-z0-9\s\'\x22\,\.]/}
-        // gender [male|female]
     }
 }

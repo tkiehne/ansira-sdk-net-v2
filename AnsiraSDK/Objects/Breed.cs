@@ -16,15 +16,15 @@ namespace Ansira.Objects
         public int Id { get; set; }
         [Required(AllowEmptyStrings = false)]
         [JsonProperty(PropertyName = "keyName")]
+        [RegularExpression(@"^[A-Z_]{2,45}$", ErrorMessage = "Invalid Breed Key Name")]
         public string KeyName { get; set; }
         [Required(AllowEmptyStrings = false)]
         [JsonProperty(PropertyName = "name")]
+        [MinLength(2)]
+        [MaxLength(45)]
+        // negate [RegularExpression(@"[^A-Za-z0-9\s\'\x22\,\.]", ErrorMessage = "Invalid Breed Name")]
         public string Name { get; set; }
         [JsonProperty(PropertyName = "petType")]
         public PetType PetType { get; set; }
-
-        // TODO: validation
-        // keyName {not blank}, {length: min: 2, max: 45}, {match: /^[A-Z_]+$/}
-        // name {not blank}, {length: min: 2, max: 45}, {not match: /[^A-Za-z0-9\s\'\x22\,\.]/}
     }
 }

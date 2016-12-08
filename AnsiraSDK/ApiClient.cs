@@ -18,6 +18,7 @@ namespace Ansira
         public string uatUrl = "https://uat-purinareg.ansiradigital.com/api/v2/";
         public string prodUrl = "https://profiles.purina.com/api/v2/";
         protected string apiUrl, clientId, clientSecret;
+        protected List<string> validMethods;
 
         /// <summary>
         /// Ansira API Client
@@ -46,6 +47,8 @@ namespace Ansira
             }
             this.clientId = clientId;
             this.clientSecret = clientSecret;
+
+            validMethods = new List<string>() { "GET", "POST", "PUT", "PATCH", "DELETE" };
         }
 
         #region Utility Methods
@@ -53,30 +56,37 @@ namespace Ansira
         /// <summary>
         /// Calls an API endpoint and returns results
         /// </summary>
-        /// <param name="method">API method to call</param>
+        /// <param name="endpoint">API endpoint to call</param>
         /// <param name="data">Additional POST data as NameValueCollection</param>
+        /// <param name="method">HTTP verb to use; defaults to GET</param>
         /// <returns>Response JSON as string or null if no results</returns>
-        /// <exception cref="System.ArgumentNullException">Thrown when API Method is null</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when API endpoint is null</exception>
         /// <exception cref="System.Net.WebException">Thrown when network operation fails</exception>
-        /// *** TODO: need to alter to handle different HTTP Verbs
-        protected string CallApi(string method, NameValueCollection data)
+        /// <exception cref="System.ArgumentException">Thrown when HTTP method is unsupported</exception>
+        protected string CallApi(string endpoint, NameValueCollection data, string method = "GET")
         {
-            if (method == null)
+            if (String.IsNullOrEmpty(endpoint))
             {
-                throw new ArgumentNullException("method", "API Method must not be null");
+                throw new ArgumentNullException("endpoint", "API endpoint must not be null");
             }
-            string endpoint = this.apiUrl + method;
+            if (!validMethods.Contains(method))
+            {
+                throw new ArgumentException("method", "HTTP method is not supported");
+            }
+
+            string endpointUrl = this.apiUrl + endpoint;
 
             NameValueCollection message = new NameValueCollection();
-            message.Add("client_id", this.clientId);
+            message.Add("client_id", this.clientId); // TODO: replace with access_token
             message.Add("client_sec", this.clientSecret);
+            message.Add("_format", "json"); // TODO: verify return format
             if (data != null)
             {
                 message.Add(data);
             }
 
             WebClient client = new WebClient();
-            byte[] output = client.UploadValues(endpoint, "POST", message);
+            byte[] output = client.UploadValues(endpointUrl, method, message);
 
             string apiResponse = Encoding.UTF8.GetString(output);
 
@@ -93,6 +103,58 @@ namespace Ansira
             return null;
         }
 
+        /// <summary>
+        /// Calls an API endpoint via POST and returns results
+        /// </summary>
+        /// <param name="endpoint">API endpoint to call</param>
+        /// <param name="data">Additional POST data as NameValueCollection</param>
+        /// <returns>Response JSON as string or null if no results</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when API Method is null</exception>
+        /// <exception cref="System.Net.WebException">Thrown when network operation fails</exception>
+        protected string CallApiPost(string endpoint, NameValueCollection data)
+        {
+            return CallApi(endpoint, data, "POST");
+        }
+
+        /// <summary>
+        /// Calls an API endpoint via PUT and returns results
+        /// </summary>
+        /// <param name="endpoint">API endpoint to call</param>
+        /// <param name="data">Additional POST data as NameValueCollection</param>
+        /// <returns>Response JSON as string or null if no results</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when API Method is null</exception>
+        /// <exception cref="System.Net.WebException">Thrown when network operation fails</exception>
+        protected string CallApiPut(string endpoint, NameValueCollection data)
+        {
+            return CallApi(endpoint, data, "PUT");
+        }
+
+        /// <summary>
+        /// Calls an API endpoint via PATCH and returns results
+        /// </summary>
+        /// <param name="endpoint">API endpoint to call</param>
+        /// <param name="data">Additional POST data as NameValueCollection</param>
+        /// <returns>Response JSON as string or null if no results</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when API Method is null</exception>
+        /// <exception cref="System.Net.WebException">Thrown when network operation fails</exception>
+        protected string CallApiPatch(string endpoint, NameValueCollection data)
+        {
+            return CallApi(endpoint, data, "PATCH");
+        }
+
+        /// <summary>
+        /// Calls an API endpoint via DELETE and returns results
+        /// </summary>
+        /// <param name="endpoint">API endpoint to call</param>
+        /// <param name="data">Additional POST data as NameValueCollection</param>
+        /// <returns>Response JSON as string or null if no results</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when API Method is null</exception>
+        /// <exception cref="System.Net.WebException">Thrown when network operation fails</exception>
+        protected string CallApiDelete(string endpoint, NameValueCollection data)
+        {
+            return CallApi(endpoint, data, "DELETE");
+        }
+
         #endregion
 
         #region Brand Methods
@@ -100,6 +162,7 @@ namespace Ansira
         /// <summary>
         /// Get all the brands associated with Purina
         /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-brands</remarks>
         /// <returns>IList of Ansira.Objects.Brand objects or null if none</returns>
         public IList<Brand> GetBrands()
         {
@@ -119,6 +182,7 @@ namespace Ansira
         /// <summary>
         /// Find a Brand by its ID
         /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-brands-{id}</remarks>
         /// <param name="id">ID integer</param>
         /// <returns>Ansira.Objects.Brand</returns>
         /// <exception cref="System.ArgumentNullException">Thrown when ID is null</exception>
@@ -146,6 +210,7 @@ namespace Ansira
         /// <summary>
         /// Get all the brands associated with Purina
         /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-sourcecodes</remarks>
         /// <returns>IList of Ansira.Objects.SourceCode objects or null if none</returns>
         public IList<SourceCode> GetSourceCodes()
         {
@@ -165,6 +230,7 @@ namespace Ansira
         /// <summary>
         /// Find a SourceCode by its ID
         /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-sourcecodes-{id}</remarks>
         /// <param name="id">ID string</param>
         /// <returns>Ansira.Objects.SourceCode</returns>
         /// <exception cref="System.ArgumentNullException">Thrown when ID is null</exception>
@@ -331,6 +397,7 @@ namespace Ansira
         /// <summary>
         /// Get the pet breeds supported by the API
         /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-breeds</remarks>
         /// <returns>IList of Ansira.Objects.Breed objects or null if none</returns>
         public IList<Breed> GetBreeds()
         {
@@ -350,6 +417,7 @@ namespace Ansira
         /// <summary>
         /// Find a Breed by its ID
         /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-breeds-{id}</remarks>
         /// <param name="id">ID integer</param>
         /// <returns>Ansira.Objects.Breed</returns>
         /// <exception cref="System.ArgumentNullException">Thrown when ID is null</exception>
@@ -401,6 +469,7 @@ namespace Ansira
         /// <summary>
         /// Get the pet types supported by the API
         /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-pettypes</remarks>
         /// <returns>IList of Ansira.Objects.PetType objects or null if none</returns>
         public IList<PetType> GetPetTypes()
         {
@@ -420,6 +489,7 @@ namespace Ansira
         /// <summary>
         /// Find a PetType by its ID
         /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-pettypes-{id}</remarks>
         /// <param name="id">ID integer</param>
         /// <returns>Ansira.Objects.PetType</returns>
         /// <exception cref="System.ArgumentNullException">Thrown when ID is null</exception>
@@ -444,12 +514,13 @@ namespace Ansira
         }
 
         /// <summary>
-        /// Get Pets by User ID
+        /// Find Pets by User ID
         /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-users-{user_id}-pets</remarks>
         /// <param name="userId">ID integer</param>
         /// <returns>IList of Ansira.Objects.Pet</returns>
         /// <exception cref="System.ArgumentNullException">Thrown when ID is null</exception>
-        public IList<Pet> GetPetsByUserId(int userId)
+        public IList<Pet> FindPetsByUserId(int userId)
         {
             if (String.IsNullOrEmpty(userId.ToString()))
             {
@@ -469,14 +540,29 @@ namespace Ansira
             }
         }
 
-        // POST /api/v2/users/{user_id}/pets Creates/updates user's pet
-        public object UpdatePet(int userId)
+        // POST /api/v2/users/{user_id}/pets Creates user's pet
+        public object CreatePet(int userId)
         {
             return new NotImplementedException();
         }
-        public object CreatePet(int userId)
+
+        // DELETE /api/v2/users/{user_id}/pets/{pet_id} Delete pet
+        public object DeletePet(int userId, int petId)
         {
-            return this.UpdatePet(userId);
+            return new NotImplementedException();
+        }
+
+        // GET /api/v2/users/{user_id}/pets/{pet_id} Retrieves a user's pet
+        public object FindPetById(int userId, int petId)
+        {
+            return new NotImplementedException();
+        }
+
+        // PATCH /api/v2/users/{user_id}/pets/{pet_id} Update pet by ID
+        // PUT /api/v2/users/{user_id}/pets/{pet_id} Update pet by ID
+        public object UpdatePet(int userId, int petId)
+        {
+            return new NotImplementedException();
         }
 
         #endregion
@@ -491,12 +577,13 @@ namespace Ansira
         }
 
         /// <summary>
-        /// Get Subscriptions by User ID
+        /// Find Subscriptions by User ID
         /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-users-{user_id}-subscriptions</remarks>
         /// <param name="userId">ID integer</param>
         /// <returns>IList of Ansira.Objects.Subscription</returns>
         /// <exception cref="System.ArgumentNullException">Thrown when ID is null</exception>
-        public IList<Subscription> GetSubscriptionsByUserId(int userId)
+        public IList<Subscription> FindSubscriptionsByUserId(int userId)
         {
             if (String.IsNullOrEmpty(userId.ToString()))
             {
@@ -517,15 +604,15 @@ namespace Ansira
         }
 
         // PATCH /api/v2/users/{user_id}/subscriptions Updates a user subscription
-        // POST /api/v2/users/{user_id}/subscriptions Create user subscription
         // PUT /api/v2/users/{user_id}/subscriptions Updates user subscription
         public object UpdateUserSubscription(int userId)
         {
             return new NotImplementedException();
         }
+        // POST /api/v2/users/{user_id}/subscriptions Create user subscription
         public object CreateUserSubscription(int userId)
         {
-            return this.UpdateUserSubscription(userId);
+            return new NotImplementedException();
         }
 
         // /api/v2/users/{user_id}/subscriptions/{brand_code}
@@ -536,14 +623,15 @@ namespace Ansira
         }
 
         /// <summary>
-        /// Get Subscriptions by User ID and Brand
+        /// Find Subscriptions by User ID and Brand
         /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-users-{user_id}-subscriptions-{brand_code}</remarks>
         /// <param name="userId">ID integer</param>
         /// <param name="brandId">Brand code</param>
         /// <returns>IList of Ansira.Objects.Subscription</returns>
         /// <exception cref="System.ArgumentNullException">Thrown when ID is null</exception>
         /// <exception cref="System.ArgumentNullException">Thrown when Brand is null</exception>
-        public IList<Subscription> GetUserSubscriptionsByBrand(int userId, string brandId)
+        public IList<Subscription> FindUserSubscriptionsByBrand(int userId, string brandId)
         {
             if (String.IsNullOrEmpty(userId.ToString()))
             {
@@ -568,15 +656,16 @@ namespace Ansira
         }
 
         // PATCH /api/v2/users/{user_id}/subscriptions/{brand_code} Updates a user subscription
-        // POST /api/v2/users/{user_id}/subscriptions/{brand_code} Create user subscription
         // PUT /api/v2/users/{user_id}/subscriptions/{brand_code} Updates user subscription
         public object UpdateUserSubscriptionByBrand(int userId, string brandId)
         {
             return new NotImplementedException();
         }
+
+        // POST /api/v2/users/{user_id}/subscriptions/{brand_code} Create user subscription
         public object CreateUserSubscriptionByBrand(int userId, string brandId)
         {
-            return this.UpdateUserSubscriptionByBrand(userId, brandId);
+            return new NotImplementedException();
         }
 
         #endregion
@@ -586,6 +675,7 @@ namespace Ansira
         /// <summary>
         /// Get list of Ansira Users
         /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-users</remarks>
         /// <returns>IList of Ansira.Objects.User</returns>
         public IList<User> GetUsers()
         {
@@ -613,6 +703,7 @@ namespace Ansira
         /// <summary>
         /// Find a User by its ID
         /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-users-{id}</remarks>
         /// <param name="id">ID integer</param>
         /// <returns>Ansira.Objects.User</returns>
         /// <exception cref="System.ArgumentNullException">Thrown when ID is null</exception>
@@ -638,6 +729,7 @@ namespace Ansira
 
         /// <summary>
         /// Find an Ansira User by its UUID
+        /// <para>See also <seealso cref="GetUsers()"/></para>
         /// </summary>
         /// <param name="uuid">UUID string</param>
         /// <returns>Ansira.Objects.User</returns>
@@ -665,6 +757,7 @@ namespace Ansira
 
         /// <summary>
         /// Find an Ansira User by its Email
+        /// <para>See also <seealso cref="GetUsers()"/></para>
         /// </summary>
         /// <param name="email">A valid email address</param>
         /// <returns>Ansira.Objects.User</returns>
@@ -694,6 +787,7 @@ namespace Ansira
 
         /// <summary>
         /// Find an Ansira User by its First and Last name
+        /// <para>See also <seealso cref="GetUsers()"/></para>
         /// </summary>
         /// <param name="familyName">Last name</param>
         /// <param name="givenName">First name</param>
@@ -731,6 +825,7 @@ namespace Ansira
         /// <summary>
         /// Create a new User in the Ansira API
         /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#post--api-v2-users</remarks>
         /// <param name="user">Ansira.Objects.User</param>
         /// <returns>Ansira.Objects.User or null if error</returns>
         /// <exception cref="System.ArgumentNullException">Thrown when User or Email is null</exception>
@@ -753,7 +848,7 @@ namespace Ansira
 
             tmp.GetType().GetProperties().ToList().ForEach(pi => data.Add(pi.Name, (pi.GetValue(tmp, null) ?? "").ToString()));
 
-            string results = CallApi("users", data);
+            string results = CallApiPost("users", data);
             if (results != null)
             {
                 ResponseV3 response = JsonConvert.DeserializeObject<ResponseV3>(results); // TEMP?
@@ -767,6 +862,7 @@ namespace Ansira
 
         /// <summary>
         /// Delete an existing User from the Ansira API
+        /// <para>Invokes <see cref="DeleteUser(System.Int32)"/></para>
         /// </summary>
         /// <param name="user">Ansira.Objects.User with non-null UUID</param>
         /// <exception cref="System.ArgumentNullException">Thrown when User is null</exception>
@@ -782,6 +878,7 @@ namespace Ansira
         /// <summary>
         /// Delete an existing User from the Ansira API
         /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#delete--api-v2-users-{id}</remarks>
         /// <param name="id">ID integer</param>
         /// <exception cref="System.ArgumentNullException">Thrown when ID is null</exception>
         public void DeleteUser(int id)
@@ -790,13 +887,14 @@ namespace Ansira
             {
                 throw new ArgumentNullException("id", "ID must not be null");
             }
-            string method = String.Format("users/{0}", id); // *** TODO: Delete verb
-            string results = CallApi(method, null);
+            string method = String.Format("users/{0}", id);
+            string results = CallApiDelete(method, null);
         }
 
         /// <summary>
         /// Update an existing User in the Ansira API
         /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#put--api-v2-users-{id}</remarks>
         /// <param name="user">Ansira.Objects.User with non-null ID</param>
         /// <returns>Ansira.Objects.User or null if error</returns>
         /// <exception cref="System.ArgumentNullException">Thrown when User or ID is null</exception>
@@ -819,7 +917,8 @@ namespace Ansira
 
             tmp.GetType().GetProperties().ToList().ForEach(pi => data.Add(pi.Name, (pi.GetValue(tmp, null) ?? "").ToString()));
 
-            string results = CallApi("users", data); // *** TODO: Put/Patch verbs
+            string method = String.Format("users/{0}", user.Id);
+            string results = CallApiPut(method, data); // *** TODO: verify that Patch & Put are the same
             if (results != null)
             {
                 ResponseV3 response = JsonConvert.DeserializeObject<ResponseV3>(results); // TEMP?
@@ -831,16 +930,26 @@ namespace Ansira
             }
         }
 
-        // /api/v2/users/{user_id}/address
-        // DELETE /api/v2/users/{user_id}/address Deletes a user's address
-        public object DeleteUserAddress(int userId)
+        /// <summary>
+        /// Delete an existing User's Address from the Ansira API
+        /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#delete--api-v2-users-{user_id}-address</remarks>
+        /// <param name="userId">ID integer for user</param>
+        /// <exception cref="System.ArgumentNullException">Thrown when ID is null</exception>
+        public void DeleteUserAddress(int userId)
         {
-            return new NotImplementedException();
+            if (String.IsNullOrEmpty(userId.ToString()))
+            {
+                throw new ArgumentNullException("userId", "ID must not be null");
+            }
+            string method = String.Format("users/{0}/address", userId);
+            string results = CallApiDelete(method, null);
         }
 
         /// <summary>
-        /// Get Address by User ID
+        /// Find Address by User ID
         /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-users-{user_id}-address</remarks>
         /// <param name="userId">ID integer</param>
         /// <returns>IList of Ansira.Objects.Address</returns>
         /// <exception cref="System.ArgumentNullException">Thrown when ID is null</exception>
@@ -863,13 +972,15 @@ namespace Ansira
                 return null;
             }
         }
+
         // PATCH /api/v2/users/{user_id}/address Updates a user's address
-        // POST /api/v2/users/{user_id}/address Creates/updates a user's address
         // PUT /api/v2/users/{user_id}/address Updates a user's address
         public object UpdateUserAddress(int userId)
         {
             return new NotImplementedException();
         }
+
+        // POST /api/v2/users/{user_id}/address Creates/updates a user's address
         public object CreateUserAddress(int userId)
         {
             return this.UpdateUserSubscription(userId);
@@ -903,6 +1014,7 @@ namespace Ansira
         /// <summary>
         /// Change Ansira User password
         /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#post--api-v2-users-{user_id}-password-change</remarks>
         /// <param name="userId">ID integer</param>
         /// <param name="password">Password string</param>
         /// <returns>Ansira.Objects.User</returns>
@@ -921,7 +1033,7 @@ namespace Ansira
             NameValueCollection data = new NameValueCollection();
             data.Add("password", password);
             string method = String.Format("users/{0}/password/change", userId);
-            string results = CallApi(method, data);
+            string results = CallApiPost(method, data);
 
             if (results != null)
             {
@@ -937,6 +1049,7 @@ namespace Ansira
         /// <summary>
         /// Verify Ansira User password for authentication
         /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#post--api-v2-users-{user_id}-password-verify</remarks>
         /// <param name="userId">ID integer</param>
         /// <param name="password">Password string</param>
         /// <returns>Boolean</returns>
@@ -955,7 +1068,7 @@ namespace Ansira
             NameValueCollection data = new NameValueCollection();
             data.Add("password", password);
             string method = String.Format("users/{0}/password/verify", userId);
-            string results = CallApi(method, data);
+            string results = CallApiPost(method, data);
 
             if (results != null)
             {

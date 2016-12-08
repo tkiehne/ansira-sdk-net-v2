@@ -22,11 +22,20 @@ namespace Ansira.Objects
         [RegularExpression(@"^([^@\s]+)@((?:[-a-zA-Z0-9]+\.)+[a-zA-Z]{2,})$", ErrorMessage = "Email is not valid")]
         public string Email { get; set; }
         [JsonProperty(PropertyName = "lastName")]
-        public string LastName { get; set; } // {length: min: 1, max: 100}, {not match: /[^A-Za-z\s\'\x22\,\.\-]/}
+        [MinLength(1)]
+        [MaxLength(100)]
+        //negate: [RegularExpression(@"[^A-Za-z\s\'\x22\,\.\-]", ErrorMessage = "Invalid Last Name")]
+        public string LastName { get; set; }
         [JsonProperty(PropertyName = "firstName")]
-        public string FirstName { get; set; } // {length: min: 1, max: 100}, {not match: /[^A-Za-z\s\'\x22\,\.\-]/}
+        [MinLength(1)]
+        [MaxLength(100)]
+        //negate: [RegularExpression(@"[^A-Za-z\s\'\x22\,\.\-]", ErrorMessage = "Invalid First Name")]
+        public string FirstName { get; set; }
         [JsonProperty(PropertyName = "middleName")]
-        public string MiddleName { get; set; } // {length: min: 1, max: 50}, {not match: /[^A-Za-z\s\'\x22\,\.\-]/}
+        [MinLength(1)]
+        [MaxLength(50)]
+        //negate: [RegularExpression(@"[^A-Za-z\s\'\x22\,\.\-]", ErrorMessage = "Invalid Middle Name")]
+        public string MiddleName { get; set; }
         [JsonProperty(PropertyName = "dogCount")]
         public int DogCount { get; set; }
         [JsonProperty(PropertyName = "catCount")]
@@ -40,7 +49,10 @@ namespace Ansira.Objects
         [JsonProperty(PropertyName = "lastSourceCode")]
         public SourceCode LastSourceCode { get; set; }
         [JsonProperty(PropertyName = "password")]
-        public string Password { get; set; } // {length: min: 8, max: 255}, {match: /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(.*)$/}
+        [MinLength(8)]
+        [MaxLength(255)]
+        [RegularExpression(@"^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(.*)$", ErrorMessage = "Insufficient Password")]
+        public string Password { get; set; }
         [JsonProperty(PropertyName = "enabled")]
         public bool Enabled { get; set; }
         [JsonProperty(PropertyName = "createdAt")]

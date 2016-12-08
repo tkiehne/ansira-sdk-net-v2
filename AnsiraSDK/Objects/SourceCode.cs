@@ -19,6 +19,9 @@ namespace Ansira.Objects
         public string Name { get; set; }
         [Required(AllowEmptyStrings = false)]
         [JsonProperty(PropertyName = "keyName")]
+        [MinLength(2)]
+        [MaxLength(50)]
+        [RegularExpression(@"^[A-Za-z0-9_]+$", ErrorMessage = "Invalid Pet Type Key Name")]
         public string KeyName { get; set; }
         [JsonProperty(PropertyName = "isActive")]
         public bool IsActive { get; set; }
@@ -27,8 +30,5 @@ namespace Ansira.Objects
         public DateTime ExpiresAt { get; set; }
 
         // TODO: [eventActions][]
-
-        // TODO: validation
-        // keyName {not blank}, {length: min: 2, max: 50}, {match: /^[A-Za-z0-9_]+$/}
     }
 }

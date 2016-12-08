@@ -16,17 +16,18 @@ namespace Ansira.Objects
         public int Id { get; set; }
         [Required(AllowEmptyStrings = false)]
         [JsonProperty(PropertyName = "keyName")]
+        [MinLength(2)]
+        [MaxLength(45)]
         public string KeyName { get; set; }
         [Required(AllowEmptyStrings = false)]
         [JsonProperty(PropertyName = "foodType")]
+        [MinLength(2)]
+        [MaxLength(45)]
         public string FoodType { get; set; }
         [Required(AllowEmptyStrings = false)]
         [JsonProperty(PropertyName = "description")]
+        [MinLength(2)]
+        [MaxLength(255)]
         public string Description { get; set; }
-
-        // TODO: validation
-        // keyName {not blank}, {length: min: 2, max: 45}
-        // foodType {not blank}, {length: min: 2, max: 45}
-        // description {not blank}, {length: min: 2, max: 255}
     }
 }
