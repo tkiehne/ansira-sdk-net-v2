@@ -441,29 +441,98 @@ namespace Ansira
             }
         }
 
-        // /api/v2/petfoods
-        // GET /api/v2/petfoods Provides a standardized list of pet food brands.
+        /// <summary>
+        /// Get the pet foods supported by the API
+        /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-petfoods</remarks>
+        /// <returns>IList of Ansira.Objects.PetFood objects or null if none</returns>
         public IList<PetFood> GetPetFoods()
         {
-            throw new NotImplementedException();
+            string results = CallApi("petfoods", null);
+
+            if (results != null)
+            {
+                ResponseV1 response = JsonConvert.DeserializeObject<ResponseV1>(results); // TEMP
+                return JsonConvert.DeserializeObject<IList<PetFood>>(JsonConvert.SerializeObject(response.Result));
+            }
+            else
+            {
+                return null;
+            }
         }
-        // /api/v2/petfoods/{id}
-        // GET /api/v2/petfoods/{id} Retrieve a pet food
+
+        /// <summary>
+        /// Find a Pet Food by its ID
+        /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-petfoods-{id}</remarks>
+        /// <param name="id">ID integer</param>
+        /// <returns>Ansira.Objects.PetFood</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when ID is null</exception>
         public PetFood FindPetFoodById(int id)
         {
-            throw new NotImplementedException();
+            if (String.IsNullOrEmpty(id.ToString()))
+            {
+                throw new ArgumentNullException("id", "ID must not be null");
+            }
+            string method = String.Format("petfoods/{0}", id);
+            string results = CallApi(method, null);
+
+            if (results != null)
+            {
+                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
+                return JsonConvert.DeserializeObject<PetFood>(JsonConvert.SerializeObject(response.Results));
+            }
+            else
+            {
+                return null;
+            }
         }
-        // /api/v2/petownershipplans
-        // GET /api/v2/petownershipplans Retrieve list of pet ownership plans
+
+        /// <summary>
+        /// Get the pet ownership plans supported by the API
+        /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-petownershipplans</remarks>
+        /// <returns>IList of Ansira.Objects.PetOwnershipPlan objects or null if none</returns>
         public IList<PetOwnershipPlan> GetOwnershipPlans()
         {
-            throw new NotImplementedException();
+            string results = CallApi("petownershipplans", null);
+
+            if (results != null)
+            {
+                ResponseV1 response = JsonConvert.DeserializeObject<ResponseV1>(results); // TEMP
+                return JsonConvert.DeserializeObject<IList<PetOwnershipPlan>>(JsonConvert.SerializeObject(response.Result));
+            }
+            else
+            {
+                return null;
+            }
         }
-        // /api/v2/petownershipplans/{id}
-        // GET /api/v2/petownershipplans/{id} Retrieve a pet ownership plan
+
+        /// <summary>
+        /// Find a Pet Ownership Plan by its ID
+        /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-petownershipplans-{id}</remarks>
+        /// <param name="id">ID integer</param>
+        /// <returns>Ansira.Objects.PetOwnershipPlan</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when ID is null</exception>
         public PetOwnershipPlan FindOwnershipPlanById(int id)
         {
-            throw new NotImplementedException();
+            if (String.IsNullOrEmpty(id.ToString()))
+            {
+                throw new ArgumentNullException("id", "ID must not be null");
+            }
+            string method = String.Format("petownershipplans/{0}", id);
+            string results = CallApi(method, null);
+
+            if (results != null)
+            {
+                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
+                return JsonConvert.DeserializeObject<PetOwnershipPlan>(JsonConvert.SerializeObject(response.Results));
+            }
+            else
+            {
+                return null;
+            }
         }
 
         /// <summary>
@@ -540,29 +609,154 @@ namespace Ansira
             }
         }
 
-        // POST /api/v2/users/{user_id}/pets Creates user's pet
+        /// <summary>
+        /// Create a new Pet in the Ansira API
+        /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#post--api-v2-users-{user_id}-pets</remarks>
+        /// <param name="userId">User ID integer</param>
+        /// <param name="pet">Ansira.Objects.Pet</param>
+        /// <returns>Ansira.Objects.Pet or null if error</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when User ID or Pet is null</exception>
         public Pet CreatePet(int userId, Pet pet)
         {
-            throw new NotImplementedException();
+            if (pet == null)
+            {
+                throw new ArgumentNullException("user", "Pet must not be null");
+            }
+            if (String.IsNullOrEmpty(userId.ToString()))
+            {
+                throw new ArgumentNullException("userId", "User ID must not be null");
+            }
+            // TODO: Validate Pet
+
+            NameValueCollection data = new NameValueCollection();
+
+            // pass through JSON to get correct parameters
+            string record = JsonConvert.SerializeObject(pet, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            var tmp = new Object();
+            JsonConvert.PopulateObject(record, tmp);
+
+            tmp.GetType().GetProperties().ToList().ForEach(pi => data.Add(pi.Name, (pi.GetValue(tmp, null) ?? "").ToString()));
+            
+            string method = String.Format("users/{0}/pets", userId);
+            string results = CallApiPost(method, data);
+            if (results != null)
+            {
+                ResponseV3 response = JsonConvert.DeserializeObject<ResponseV3>(results); // TEMP?
+                return JsonConvert.DeserializeObject<Pet>(JsonConvert.SerializeObject(response.Record.Results));
+            }
+            else
+            {
+                return null;
+            }
         }
 
-        // DELETE /api/v2/users/{user_id}/pets/{pet_id} Delete pet
+        /// <summary>
+        /// Delete an existing User from the Ansira API
+        /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#delete--api-v2-users-{user_id}-pets-{pet_id}</remarks>
+        /// <param name="userId">User ID integer</param>
+        /// <param name="petId">Pet ID integer</param>
+        /// <returns>Boolean; True if successful, False if error</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when User or Pet ID is null</exception>
         public bool DeletePet(int userId, int petId)
         {
-            throw new NotImplementedException();
+            if (String.IsNullOrEmpty(userId.ToString()))
+            {
+                throw new ArgumentNullException("userId", "User ID must not be null");
+            }
+            if (String.IsNullOrEmpty(petId.ToString()))
+            {
+                throw new ArgumentNullException("petId", "Pet ID must not be null");
+            }
+            string method = String.Format("users/{0}/pets/{1}", userId, petId);
+            string results = CallApiDelete(method, null);
+            if (results == null)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
 
-        // GET /api/v2/users/{user_id}/pets/{pet_id} Retrieves a user's pet
+        /// <summary>
+        /// Find Pet by User ID and Pet ID
+        /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-users-{user_id}-pets-{pet_id}</remarks>
+        /// <param name="userId">User ID integer</param>
+        /// <param name="petId">Pet ID integer</param>
+        /// <returns>Ansira.Objects.Pet</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when User or Pet ID is null</exception>
         public Pet FindPetById(int userId, int petId)
         {
-            throw new NotImplementedException();
+            if (String.IsNullOrEmpty(userId.ToString()))
+            {
+                throw new ArgumentNullException("userId", "User ID must not be null");
+            }
+            if (String.IsNullOrEmpty(petId.ToString()))
+            {
+                throw new ArgumentNullException("petId", "Pet ID must not be null");
+            }
+            string method = String.Format("users/{0}/pets/{1}", userId, petId);
+            string results = CallApi(method, null);
+
+            if (results != null)
+            {
+                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
+                return JsonConvert.DeserializeObject<Pet>(JsonConvert.SerializeObject(response.Results));
+            }
+            else
+            {
+                return null;
+            }
         }
 
-        // PATCH /api/v2/users/{user_id}/pets/{pet_id} Update pet by ID
-        // PUT /api/v2/users/{user_id}/pets/{pet_id} Update pet by ID
-        public Pet UpdatePet(int userId, int petId, Pet pet)
+        /// <summary>
+        /// Update a Pet in the Ansira API
+        /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#put--api-v2-users-{user_id}-pets-{pet_id}</remarks>
+        /// <param name="userId">User ID integer</param>
+        /// <param name="pet">Ansira.Objects.Pet</param>
+        /// <returns>Ansira.Objects.Pet or null if error</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when User ID or Pet is null</exception>
+        public Pet UpdatePet(int userId, Pet pet)
         {
-            throw new NotImplementedException();
+            if (pet == null)
+            {
+                throw new ArgumentNullException("pet", "Pet must not be null");
+            }
+            if (String.IsNullOrEmpty(pet.Id.ToString()))
+            {
+                throw new ArgumentNullException("pet.Id", "Pet ID must not be null");
+            }
+            if (String.IsNullOrEmpty(userId.ToString()))
+            {
+                throw new ArgumentNullException("userId", "User ID must not be null");
+            }
+            // TODO: Validate Pet
+
+            NameValueCollection data = new NameValueCollection();
+
+            // pass through JSON to get correct parameters
+            string record = JsonConvert.SerializeObject(pet, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            var tmp = new Object();
+            JsonConvert.PopulateObject(record, tmp);
+
+            tmp.GetType().GetProperties().ToList().ForEach(pi => data.Add(pi.Name, (pi.GetValue(tmp, null) ?? "").ToString()));
+
+            string method = String.Format("users/{0}/pets/{1}", userId, pet.Id);
+            string results = CallApiPut(method, data); // TODO: Put vs Patch
+            if (results != null)
+            {
+                ResponseV3 response = JsonConvert.DeserializeObject<ResponseV3>(results); // TEMP?
+                return JsonConvert.DeserializeObject<Pet>(JsonConvert.SerializeObject(response.Record.Results));
+            }
+            else
+            {
+                return null;
+            }
         }
 
         #endregion
@@ -634,11 +828,42 @@ namespace Ansira
             }
         }
 
-        // PATCH /api/v2/users/{user_id}/subscriptions Updates a user subscription
-        // PUT /api/v2/users/{user_id}/subscriptions Updates user subscription
-        public bool UpdateUserSubscription(int userId)
+        /// <summary>
+        /// Update Subscriptions for a User in the Ansira API
+        /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#put--api-v2-users-{user_id}-subscriptions</remarks>
+        /// <param name="userId">User ID integer</param>
+        /// <param name="brandCodes">List of brand codes</param>
+        /// <returns>True if successful or false if error</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when User ID is null or brandCodes is null or empty</exception>
+        public bool UpdateUserSubscription(int userId, List<string> brandCodes)
         {
-            throw new NotImplementedException();
+            if (String.IsNullOrEmpty(userId.ToString()))
+            {
+                throw new ArgumentNullException("userId", "ID must not be null");
+            }
+            if (brandCodes == null || brandCodes.Count < 1)
+            {
+                throw new ArgumentNullException("brandCodes", "Must supply at least one brand code");
+            }
+            NameValueCollection data = new NameValueCollection();
+
+            // assuming URL-type array and not JSON
+            for (var i = 0; i < brandCodes.Count - 1; i++)
+            {
+                data.Add("subscriptions[" + i + "]", brandCodes[i]);
+            }
+
+            string method = String.Format("users/{0}/subscriptions", userId);
+            string results = CallApiPut(method, data); // TODO: verify Put and Patch are the same
+            if (results != null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -679,11 +904,37 @@ namespace Ansira
             }
         }
 
-        // /api/v2/users/{user_id}/subscriptions/{brand_code}
-        // DELETE /api/v2/users/{user_id}/subscriptions/{brand_code} Unsubscribe user
-        public bool DeleteUserSubscriptionByBrand(int userId, string brandId)
+        /// <summary>
+        /// Delete Subscription for a specific User and Brand in the Ansira API
+        /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#delete--api-v2-users-{user_id}-subscriptions-{brand_code}</remarks>
+        /// <param name="userId">User ID integer</param>
+        /// <param name="brandCode">Brand code</param>
+        /// <returns>True if successful or false if error</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when User ID is null or Brand Code is null or empty</exception>
+        public bool DeleteUserSubscriptionByBrand(int userId, string brandCode)
         {
-            throw new NotImplementedException();
+            if (String.IsNullOrEmpty(userId.ToString()))
+            {
+                throw new ArgumentNullException("userId", "ID must not be null");
+            }
+            if (String.IsNullOrEmpty(brandCode))
+            {
+                throw new ArgumentNullException("brandCode", "Must supply a brand code");
+            }
+            // NameValueCollection data = new NameValueCollection(); TODO: do we need parameters?
+            // data.Add("subscriptions[]", brandCode);
+
+            string method = String.Format("users/{0}/subscriptions/{1}", userId, brandCode);
+            string results = CallApiDelete(method, null);
+            if (results != null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -719,17 +970,71 @@ namespace Ansira
             }
         }
 
-        // PATCH /api/v2/users/{user_id}/subscriptions/{brand_code} Updates a user subscription
-        // PUT /api/v2/users/{user_id}/subscriptions/{brand_code} Updates user subscription
-        public bool UpdateUserSubscriptionByBrand(int userId, string brandId)
+        /// <summary>
+        /// Update a Subscription for a User and Brand in the Ansira API
+        /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#put--api-v2-users-{user_id}-subscriptions-{brand_code}</remarks>
+        /// <param name="userId">User ID integer</param>
+        /// <param name="brandCode">Brand code</param>
+        /// <returns>True if successful or false if error</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when User ID is null or Brand Code is null or empty</exception>
+        public bool UpdateUserSubscriptionByBrand(int userId, string brandCode)
         {
-            throw new NotImplementedException();
+            // TODO: does this method make any sense?
+            if (String.IsNullOrEmpty(userId.ToString()))
+            {
+                throw new ArgumentNullException("userId", "ID must not be null");
+            }
+            if (String.IsNullOrEmpty(brandCode))
+            {
+                throw new ArgumentNullException("brandCode", "Must supply a brand code");
+            }
+            // NameValueCollection data = new NameValueCollection(); TODO: do we need parameters?
+            // data.Add("subscriptions[]", brandCode);
+
+            string method = String.Format("users/{0}/subscriptions/{1}", userId, brandCode);
+            string results = CallApiPut(method, null); // TODO: verify if Put and Patch are the same
+            if (results != null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
-        // POST /api/v2/users/{user_id}/subscriptions/{brand_code} Create user subscription
-        public bool CreateUserSubscriptionByBrand(int userId, string brandId)
+        /// <summary>
+        /// Create a new Subscription for a User and Brand in the Ansira API
+        /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#post--api-v2-users-{user_id}-subscriptions-{brand_code}</remarks>
+        /// <param name="userId">User ID integer</param>
+        /// <param name="brandCode">Brand code</param>
+        /// <returns>True if successful or false if error</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when User ID is null or Brand Code is null or empty</exception>
+        public bool CreateUserSubscription(int userId, string brandCode)
         {
-            throw new NotImplementedException();
+            if (String.IsNullOrEmpty(userId.ToString()))
+            {
+                throw new ArgumentNullException("userId", "ID must not be null");
+            }
+            if (String.IsNullOrEmpty(brandCode))
+            {
+                throw new ArgumentNullException("brandCode", "Must supply a brand code");
+            }
+            // NameValueCollection data = new NameValueCollection(); TODO: do we need parameters?
+            // data.Add("subscriptions[]", brandCode);
+
+            string method = String.Format("users/{0}/subscriptions/{1}", userId, brandCode);
+            string results = CallApiPost(method, null);
+            if (results != null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         #endregion
@@ -903,6 +1208,8 @@ namespace Ansira
             {
                 throw new ArgumentNullException("user.Email", "Email must not be null");
             }
+            // TODO: validate User
+
             NameValueCollection data = new NameValueCollection();
 
             // pass through JSON to get correct parameters
@@ -978,8 +1285,10 @@ namespace Ansira
             }
             if (String.IsNullOrEmpty(user.Id.ToString()))
             {
-                throw new ArgumentNullException("id", "User's ID must not be null");
+                throw new ArgumentNullException("id", "User ID must not be null");
             }
+            // TODO: validate user
+
             NameValueCollection data = new NameValueCollection();
 
             // pass through JSON to get correct parameters
@@ -1031,9 +1340,9 @@ namespace Ansira
         /// </summary>
         /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-users-{user_id}-address</remarks>
         /// <param name="userId">ID integer</param>
-        /// <returns>IList of Ansira.Objects.Address</returns>
+        /// <returns>Ansira.Objects.Address</returns>
         /// <exception cref="System.ArgumentNullException">Thrown when ID is null</exception>
-        public IList<Address> FindAddressByUserId(int userId)
+        public Address FindAddressByUserId(int userId)
         {
             if (String.IsNullOrEmpty(userId.ToString()))
             {
@@ -1045,7 +1354,7 @@ namespace Ansira
             if (results != null)
             {
                 ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
-                return JsonConvert.DeserializeObject<IList<Address>>(JsonConvert.SerializeObject(response.Results));
+                return JsonConvert.DeserializeObject<Address>(JsonConvert.SerializeObject(response.Results));
             }
             else
             {
@@ -1053,42 +1362,200 @@ namespace Ansira
             }
         }
 
-        // PATCH /api/v2/users/{user_id}/address Updates a user's address
-        // PUT /api/v2/users/{user_id}/address Updates a user's address
-        public bool UpdateUserAddress(int userId)
+        /// <summary>
+        /// Update an Address in the Ansira API
+        /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#put--api-v2-users-{user_id}-address</remarks>
+        /// <param name="userId">User ID integer</param>
+        /// <param name="address">Ansira.Objects.Address</param>
+        /// <returns>Ansira.Objects.Address or null if error</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when User ID or Address is null</exception>
+        public Address UpdateUserAddress(int userId, Address address)
         {
-            throw new NotImplementedException();
+            if (address == null)
+            {
+                throw new ArgumentNullException("address", "Address must not be null");
+            }
+            if (String.IsNullOrEmpty(address.Id.ToString()))
+            {
+                throw new ArgumentNullException("address.Id", "Address ID must not be null");
+            }
+            if (String.IsNullOrEmpty(userId.ToString()))
+            {
+                throw new ArgumentNullException("userId", "User ID must not be null");
+            }
+            // TODO: Validate address
+
+            NameValueCollection data = new NameValueCollection();
+
+            // pass through JSON to get correct parameters
+            string record = JsonConvert.SerializeObject(address, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            var tmp = new Object();
+            JsonConvert.PopulateObject(record, tmp);
+
+            tmp.GetType().GetProperties().ToList().ForEach(pi => data.Add(pi.Name, (pi.GetValue(tmp, null) ?? "").ToString()));
+
+            string method = String.Format("users/{0}/address/{1}", userId, address.Id);
+            string results = CallApiPut(method, data); // TODO: verify if Put and Patch are identical
+            if (results != null)
+            {
+                ResponseV3 response = JsonConvert.DeserializeObject<ResponseV3>(results); // TEMP?
+                return JsonConvert.DeserializeObject<Address>(JsonConvert.SerializeObject(response.Record.Results));
+            }
+            else
+            {
+                return null;
+            }
         }
 
-        // POST /api/v2/users/{user_id}/address Creates/updates a user's address
-        public Address CreateUserAddress(int userId)
+        /// <summary>
+        /// Create a new Address in the Ansira API
+        /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#post--api-v2-users-{user_id}-address</remarks>
+        /// <param name="userId">User ID integer</param>
+        /// <param name="address">Ansira.Objects.Address</param>
+        /// <returns>Ansira.Objects.Address or null if error</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when User ID or Address is null</exception>
+        public Address CreateUserAddress(int userId, Address address)
         {
-            throw new NotImplementedException();
+            if (address == null)
+            {
+                throw new ArgumentNullException("address", "Address must not be null");
+            }
+            if (String.IsNullOrEmpty(userId.ToString()))
+            {
+                throw new ArgumentNullException("userId", "User ID must not be null");
+            }
+            // TODO: Validate Address
+
+            NameValueCollection data = new NameValueCollection();
+
+            // pass through JSON to get correct parameters
+            string record = JsonConvert.SerializeObject(address, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            var tmp = new Object();
+            JsonConvert.PopulateObject(record, tmp);
+
+            tmp.GetType().GetProperties().ToList().ForEach(pi => data.Add(pi.Name, (pi.GetValue(tmp, null) ?? "").ToString()));
+
+            string method = String.Format("users/{0}/address", userId);
+            string results = CallApiPost(method, data);
+            if (results != null)
+            {
+                ResponseV3 response = JsonConvert.DeserializeObject<ResponseV3>(results); // TEMP?
+                return JsonConvert.DeserializeObject<Address>(JsonConvert.SerializeObject(response.Record.Results));
+            }
+            else
+            {
+                return null;
+            }
         }
 
-        // /api/v2/users/{user_id}/currency
-        // GET /api/v2/users/{user_id}/currency Get user currency
+        /// <summary>
+        /// Find User's Currency by User ID
+        /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-users-{user_id}-currency</remarks>
+        /// <param name="userId">ID integer</param>
+        /// <returns>Ansira.Objects.Currency</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when ID is null</exception>
         public Currency FindCurrencyByUserId(int userId)
         {
-            throw new NotImplementedException();
+            if (String.IsNullOrEmpty(userId.ToString()))
+            {
+                throw new ArgumentNullException("userId", "ID must not be null");
+            }
+            string method = String.Format("users/{0}/currency", userId);
+            string results = CallApi(method, null);
+
+            if (results != null)
+            {
+                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
+                return JsonConvert.DeserializeObject<Currency>(JsonConvert.SerializeObject(response.Results));
+            }
+            else
+            {
+                return null;
+            }
         }
-        // /api/v2/users/{user_id}/language
-        // GET /api/v2/users/{user_id}/language Get user language
+
+        /// <summary>
+        /// Find User's Language by User ID
+        /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-users-{user_id}-language</remarks>
+        /// <param name="userId">ID integer</param>
+        /// <returns>Ansira.Objects.Language</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when ID is null</exception>
         public Language FindLanguageByUserId(int userId)
         {
-            throw new NotImplementedException();
+            if (String.IsNullOrEmpty(userId.ToString()))
+            {
+                throw new ArgumentNullException("userId", "ID must not be null");
+            }
+            string method = String.Format("users/{0}/language", userId);
+            string results = CallApi(method, null);
+
+            if (results != null)
+            {
+                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
+                return JsonConvert.DeserializeObject<Language>(JsonConvert.SerializeObject(response.Results));
+            }
+            else
+            {
+                return null;
+            }
         }
-        // /api/v2/users/{user_id}/lastsourcecode
-        // GET /api/v2/users/{user_id}/lastsourcecode Get user last source code
+
+        /// <summary>
+        /// Find User's Last Source Code by User ID
+        /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-users-{user_id}-lastsourcecode</remarks>
+        /// <param name="userId">ID integer</param>
+        /// <returns>Ansira.Objects.SourceCode</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when ID is null</exception>
         public SourceCode FindLastSourceCodeByUserId(int userId)
         {
-            throw new NotImplementedException();
+            if (String.IsNullOrEmpty(userId.ToString()))
+            {
+                throw new ArgumentNullException("userId", "ID must not be null");
+            }
+            string method = String.Format("users/{0}/lastsourcecode", userId);
+            string results = CallApi(method, null);
+
+            if (results != null)
+            {
+                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
+                return JsonConvert.DeserializeObject<SourceCode>(JsonConvert.SerializeObject(response.Results));
+            }
+            else
+            {
+                return null;
+            }
         }
-        // /api/v2/users/{user_id}/nationality
-        // GET /api/v2/users/{user_id}/nationality Get user locale
+
+        /// <summary>
+        /// Find User's Country by User ID
+        /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-users-{user_id}-nationality</remarks>
+        /// <param name="userId">ID integer</param>
+        /// <returns>Ansira.Objects.Country</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when ID is null</exception>
         public Country FindNationalityByUserId(int userId)
         {
-            throw new NotImplementedException();
+            if (String.IsNullOrEmpty(userId.ToString()))
+            {
+                throw new ArgumentNullException("userId", "ID must not be null");
+            }
+            string method = String.Format("users/{0}/nationality", userId);
+            string results = CallApi(method, null);
+
+            if (results != null)
+            {
+                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
+                return JsonConvert.DeserializeObject<Country>(JsonConvert.SerializeObject(response.Results));
+            }
+            else
+            {
+                return null;
+            }
         }
 
         /// <summary>
@@ -1161,58 +1628,203 @@ namespace Ansira
             }
         }
 
-        // /api/v2/users/{user_id}/petownershipplan
-        // GET /api/v2/users/{user_id}/petownershipplan Get user's pet ownership plan
+        /// <summary>
+        /// Find User's Pet Ownership Plan by User ID
+        /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-users-{user_id}-petownershipplan</remarks>
+        /// <param name="userId">ID integer</param>
+        /// <returns>Ansira.Objects.PetOwnershipPlan</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when ID is null</exception>
         public PetOwnershipPlan FindOwnershipPlanByUserId(int userId)
         {
-            throw new NotImplementedException();
+            if (String.IsNullOrEmpty(userId.ToString()))
+            {
+                throw new ArgumentNullException("userId", "ID must not be null");
+            }
+            string method = String.Format("users/{0}/petownershipplan", userId);
+            string results = CallApi(method, null);
+
+            if (results != null)
+            {
+                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
+                return JsonConvert.DeserializeObject<PetOwnershipPlan>(JsonConvert.SerializeObject(response.Results));
+            }
+            else
+            {
+                return null;
+            }
         }
-        // /api/v2/users/{user_id}/sourcecode
-        // GET /api/v2/users/{user_id}/sourcecode Get user source code
+
+        /// <summary>
+        /// Find User's Source Code by User ID
+        /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-users-{user_id}-sourcecode</remarks>
+        /// <param name="userId">ID integer</param>
+        /// <returns>Ansira.Objects.SourceCode</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when ID is null</exception>
         public SourceCode FindSourceCodeByUserId(int userId)
         {
-            throw new NotImplementedException();
+            if (String.IsNullOrEmpty(userId.ToString()))
+            {
+                throw new ArgumentNullException("userId", "ID must not be null");
+            }
+            string method = String.Format("users/{0}/sourcecode", userId);
+            string results = CallApi(method, null);
+
+            if (results != null)
+            {
+                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
+                return JsonConvert.DeserializeObject<SourceCode>(JsonConvert.SerializeObject(response.Results));
+            }
+            else
+            {
+                return null;
+            }
         }
 
         #endregion
 
         #region Internationalization Methods
 
-        // /api/v2/countries
-        // GET /api/v2/countries Provides a standardized list of countries.
-        public object GetCountries()
+        /// <summary>
+        /// Get the Countries supported by the API
+        /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-countries</remarks>
+        /// <returns>IList of Ansira.Objects.Country objects or null if none</returns>
+        public IList<Country> GetCountries()
         {
-            return new NotImplementedException();
+            string results = CallApi("countries", null);
+
+            if (results != null)
+            {
+                ResponseV1 response = JsonConvert.DeserializeObject<ResponseV1>(results); // TEMP
+                return JsonConvert.DeserializeObject<IList<Country>>(JsonConvert.SerializeObject(response.Result));
+            }
+            else
+            {
+                return null;
+            }
         }
-        // /api/v2/countries/{id}
-        // GET /api/v2/countries/{id} Retrieve a country by ID
-        public object FindCountryById(int id)
+
+        /// <summary>
+        /// Find a Country by its ID
+        /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-countries-{id}</remarks>
+        /// <param name="id">ID integer</param>
+        /// <returns>Ansira.Objects.Country</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when ID is null</exception>
+        public Country FindCountryById(int id)
         {
-            return new NotImplementedException();
+            if (String.IsNullOrEmpty(id.ToString()))
+            {
+                throw new ArgumentNullException("id", "ID must not be null");
+            }
+            string method = String.Format("countries/{0}", id);
+            string results = CallApi(method, null);
+
+            if (results != null)
+            {
+                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
+                return JsonConvert.DeserializeObject<Country>(JsonConvert.SerializeObject(response.Results));
+            }
+            else
+            {
+                return null;
+            }
         }
-        // /api/v2/currencies
-        // GET /api/v2/currencies Provides a standardized list currencies.
-        public object GetCurrencies()
+
+        /// <summary>
+        /// Get the Currencies supported by the API
+        /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-currencies</remarks>
+        /// <returns>IList of Ansira.Objects.Currency objects or null if none</returns>
+        public IList<Currency> GetCurrencies()
         {
-            return new NotImplementedException();
+            string results = CallApi("currencies", null);
+
+            if (results != null)
+            {
+                ResponseV1 response = JsonConvert.DeserializeObject<ResponseV1>(results); // TEMP
+                return JsonConvert.DeserializeObject<IList<Currency>>(JsonConvert.SerializeObject(response.Result));
+            }
+            else
+            {
+                return null;
+            }
         }
-        // /api/v2/currencies/{ id}
-        // GET /api/v2/currencies/{id} Retrieves a currency.
-        public object FindCurrencyById(int id)
+
+        /// <summary>
+        /// Find a Currency by its ID
+        /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-currencies-{id}</remarks>
+        /// <param name="id">ID integer</param>
+        /// <returns>Ansira.Objects.Currency</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when ID is null</exception>
+        public Currency FindCurrencyById(int id)
         {
-            return new NotImplementedException();
+            if (String.IsNullOrEmpty(id.ToString()))
+            {
+                throw new ArgumentNullException("id", "ID must not be null");
+            }
+            string method = String.Format("currencies/{0}", id);
+            string results = CallApi(method, null);
+
+            if (results != null)
+            {
+                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
+                return JsonConvert.DeserializeObject<Currency>(JsonConvert.SerializeObject(response.Results));
+            }
+            else
+            {
+                return null;
+            }
         }
-        // /api/v2/languages
-        // GET /api/v2/languages Provides a standardized list of languages.
-        public object GetLanguages()
+
+        /// <summary>
+        /// Get the Languages supported by the API
+        /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-languages</remarks>
+        /// <returns>IList of Ansira.Objects.Language objects or null if none</returns>
+        public IList<Language> GetLanguages()
         {
-            return new NotImplementedException();
+            string results = CallApi("languages", null);
+
+            if (results != null)
+            {
+                ResponseV1 response = JsonConvert.DeserializeObject<ResponseV1>(results); // TEMP
+                return JsonConvert.DeserializeObject<IList<Language>>(JsonConvert.SerializeObject(response.Result));
+            }
+            else
+            {
+                return null;
+            }
         }
-        // /api/v2/languages/{id}
-        // GET /api/v2/languages/{id} Retrieve a language
-        public object FindLanguageById(int id)
+
+        /// <summary>
+        /// Find a Language by its ID
+        /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-languages-{id}</remarks>
+        /// <param name="id">ID integer</param>
+        /// <returns>Ansira.Objects.Language</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when ID is null</exception>
+        public Language FindLanguageById(int id)
         {
-            return new NotImplementedException();
+            if (String.IsNullOrEmpty(id.ToString()))
+            {
+                throw new ArgumentNullException("id", "ID must not be null");
+            }
+            string method = String.Format("languages/{0}", id);
+            string results = CallApi(method, null);
+
+            if (results != null)
+            {
+                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
+                return JsonConvert.DeserializeObject<Language>(JsonConvert.SerializeObject(response.Results));
+            }
+            else
+            {
+                return null;
+            }
         }
 
         #endregion

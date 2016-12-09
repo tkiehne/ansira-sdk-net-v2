@@ -315,6 +315,10 @@ namespace AnsiraSDKTests
 
         #endregion
 
+        #region Address Method Tests
+
+        #endregion
+
         #region Subscription Method Tests
         /// <summary>
         /// Test for User subscription methods - does not hit live API
@@ -577,6 +581,10 @@ namespace AnsiraSDKTests
 
             Assert.IsTrue(target.DeletePet((int)returnUser.Id, (int)pet.Id));
         }
+
+        #endregion
+
+        #region I18N Method Tests
 
         #endregion
 
