@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
 using Ansira;
 using Ansira.Objects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace AnsiraSDKTests
 {
-
-
     /// <summary>
     ///This is a test class for Ansira Api ClientTest
     ///</summary>
@@ -67,7 +66,7 @@ namespace AnsiraSDKTests
         //
         #endregion
 
-
+        #region Miscellaneous Tests
         /// <summary>
         ///A test for ApiClient Constructor
         ///</summary>
@@ -78,6 +77,26 @@ namespace AnsiraSDKTests
             Assert.IsNotNull(target);
         }
 
+        [TestMethod()]
+        public void ProductionTest()
+        {
+            ApiClient target = new ApiClient(clientId, clientSecret, false);
+
+            User prodUser = target.FindUserByEmail("kiehnet@netscape.net");
+            Assert.IsNotNull(prodUser, "FindUserByEmail does not retrieve deleted user");
+
+            prodUser.FirstName = Guid.NewGuid().ToString("N");
+            User updateUser = target.UpdateUser(prodUser);
+            Assert.IsNotNull(updateUser, "UpdateUser gets valid response");
+            Assert.IsNotNull(updateUser.Uuid, "UpdateUser sets UUID");
+            Assert.IsTrue(updateUser.FirstName == prodUser.FirstName, "UpdateUser returns updated object");
+
+        }
+
+        #endregion
+
+        #region User Method Tests
+        
         /// <summary>
         ///A test for CreateUser, UpdateUser, and DeleteUser
         ///</summary>
@@ -115,7 +134,7 @@ namespace AnsiraSDKTests
             Assert.IsTrue(updateUser.FirstName == returnUser.FirstName, "UpdateUser returns updated object");
 
             Console.WriteLine("Object updated, attempting to delete");
-            target.DeleteUser(returnUser);
+            Assert.IsTrue(target.DeleteUser(returnUser));
 
             Console.WriteLine("Object deleted, attempting to retrieve");
             User deletedUser = target.FindUserByEmail(user.Email);
@@ -294,6 +313,9 @@ namespace AnsiraSDKTests
             Console.WriteLine("Object: Email = " + user.Email);
         }
 
+        #endregion
+
+        #region Subscription Method Tests
         /// <summary>
         /// Test for User subscription methods - does not hit live API
         /// </summary>
@@ -336,65 +358,275 @@ namespace AnsiraSDKTests
             // Update (PUT / PATCH)? Do these replace or just add?
         }
 
+        #endregion
+
+        #region Brand Method Tests
+
         /// <summary>
-        ///A test for GetAllBrands
+        ///A test for Brand methods
         ///</summary>
         [TestMethod()]
-        public void GetAllBrandsTest()
+        public void BrandsTest()
         {
             ApiClient target = new ApiClient(clientId, clientSecret, true);
-            IList<Brand> brands = target.GetBrands();
+            List<Brand> brands = target.GetBrands() as List<Brand>;
 
             Assert.IsNotNull(brands, "GetBrands gets valid response");
             Assert.IsTrue(brands.Count > 1, "GetBrands returns data");
 
             Console.WriteLine("First object: " + brands[0].Id + " = " + brands[0].Name);
+
+            Brand brand = target.FindBrandById(brands.Last().Id);
+
+            Assert.IsNotNull(brand, "FindBrandById gets valid response");
+            Assert.IsTrue(brand.Id == brands.Last().Id, "FindBrandById returns data");
+
+            Console.WriteLine("Object: " + brand.Id + " = " + brand.Name);
         }
 
         /// <summary>
-        ///A test for GetPetBreeds
+        ///A test for SourceCode methods
         ///</summary>
         [TestMethod()]
-        public void GetPetBreedsTest()
+        public void SourceCodesTest()
         {
             ApiClient target = new ApiClient(clientId, clientSecret, true);
-            IList<Breed> breeds = target.GetBreeds();
+            List<SourceCode> codes = target.GetSourceCodes() as List<SourceCode>;
+
+            Assert.IsNotNull(codes, "GetSourceCodes gets valid response");
+            Assert.IsTrue(codes.Count > 1, "GetSourceCodes returns data");
+
+            Console.WriteLine("First object: " + codes[0].Id + " = " + codes[0].Name);
+
+            SourceCode code = target.FindSourceCodeById(codes.Last().KeyName); // TODO: get actual code
+
+            Assert.IsNotNull(code, "FindSourceCodeById gets valid response");
+            Assert.IsTrue(code.Id == codes.Last().Id, "FindSourceCodeById returns data"); // TODO: verify id type
+
+            Console.WriteLine("Object: " + code.Id + " = " + code.Name);
+        }
+
+        #endregion
+
+        #region Breed & Pet Type Method Tests
+
+        /// <summary>
+        ///A test for Breed methods
+        ///</summary>
+        [TestMethod()]
+        public void PetBreedsTest()
+        {
+            ApiClient target = new ApiClient(clientId, clientSecret, true);
+            List<Breed> breeds = target.GetBreeds() as List<Breed>;
 
             Assert.IsNotNull(breeds, "GetBreeds gets valid response");
             Assert.IsTrue(breeds.Count > 1, "GetBreeds returns data");
 
             Console.WriteLine("First object: " + breeds[0].Id + " = " + breeds[0].Name);
+            
+            Breed breed = target.FindBreedById(breeds.Last().Id);
+
+            Assert.IsNotNull(breed, "FindBreedById gets valid response");
+            Assert.IsTrue(breed.Id == breeds.Last().Id, "FindBreedById returns data");
+
+            Console.WriteLine("Breed object: " + breed.Id + " = " + breed.Name);
         }
 
         /// <summary>
-        ///A test for GetPetTypes
+        ///A test for PetType methods
         ///</summary>
         [TestMethod()]
-        public void GetPetTypesTest()
+        public void PetTypesTest()
         {
             ApiClient target = new ApiClient(clientId, clientSecret, true);
-            IList<PetType> types = target.GetPetTypes();
+            List<PetType> types = target.GetPetTypes() as List<PetType>;
 
             Assert.IsNotNull(types, "GetPetTypes gets valid response");
             Assert.IsTrue(types.Count > 1, "GetPetTypes returns data");
 
             Console.WriteLine("First object: " + types[0].Id + " = " + types[0].KeyName);
+
+            PetType type = target.FindPetTypeById(types.Last().Id);
+
+            Assert.IsNotNull(type, "FindPetTypeById gets valid response");
+            Assert.IsTrue(type.Id == types.Last().Id, "FindPetTypeById returns data");
+
+            Console.WriteLine("Type object: " + type.Id + " = " + type.KeyName);
+        }
+
+        #endregion
+
+        #region Food Method Tests
+        /// <summary>
+        ///A test for PetFood methods
+        ///</summary>
+        [TestMethod()]
+        public void PetFoodsTest()
+        {
+            ApiClient target = new ApiClient(clientId, clientSecret, true);
+            List<PetFood> foods = target.GetPetFoods() as List<PetFood>;
+
+            Assert.IsNotNull(foods, "GetPetFoods gets valid response");
+            Assert.IsTrue(foods.Count > 1, "GetPetFoods returns data");
+
+            Console.WriteLine("First object: " + foods[0].Id + " = " + foods[0].KeyName);
+
+            PetFood food = target.FindPetFoodById(foods.Last().Id);
+
+            Assert.IsNotNull(food, "FindPetFoodById gets valid response");
+            Assert.IsTrue(food.Id == foods.Last().Id, "FindPetFoodById returns data");
+
+            Console.WriteLine("Food object: " + food.Id + " = " + food.KeyName);
+        }
+        #endregion
+
+        #region Pet Method Tests
+
+        /// <summary>
+        ///A test for PetOwnership methods
+        ///</summary>
+        [TestMethod()]
+        public void PetOwnershipPlanTest()
+        {
+            ApiClient target = new ApiClient(clientId, clientSecret, true);
+            List<PetOwnershipPlan> plans = target.GetOwnershipPlans() as List<PetOwnershipPlan>;
+
+            Assert.IsNotNull(plans, "GetOwnershipPlans gets valid response");
+            Assert.IsTrue(plans.Count > 1, "GetOwnershipPlans returns data");
+
+            Console.WriteLine("First object: " + plans[0].Id + " = " + plans[0].KeyName);
+
+            PetOwnershipPlan plan = target.FindOwnershipPlanById(plans.Last().Id);
+
+            Assert.IsNotNull(plan, "FindOwnershipPlanById gets valid response");
+            Assert.IsTrue(plan.Id == plans.Last().Id, "FindOwnershipPlanById returns data");
+
+            Console.WriteLine("Plan object: " + plan.Id + " = " + plan.KeyName);
+        }
+
+        /// <summary>
+        ///A test for Pet methods
+        ///</summary>
+        [TestMethod()]
+        public void CreateRetrieveUpdateAndDeletePetTest()
+        {
+            ApiClient target = new ApiClient(clientId, clientSecret, true);
+            User user = new User()
+            {
+                LastName = "PetUser",
+                FirstName = "Test",
+                SourceCode = sourceCode,
+                Email = Guid.NewGuid().ToString("N") + "@fosfor.us",
+                Address = new Address()
+                {
+                    Address1 = "209 E 6th",
+                    City = "Austin",
+                    State = "TX",
+                    PostalCode = "78701"
+                }
+            };
+
+            User returnUser = target.CreateUser(user);
+
+            Assert.IsNotNull(returnUser, "CreateUser gets valid response");
+            Console.WriteLine("Object created, attempting to CRUD Pet");
+
+            Pet newPet = new Pet()
+            {
+                SourceCode = sourceCode,
+                Name = "Tester",
+                ImageUrl = "https://www.purina.com/media/284062/Akitas_2913.jpg/560/0/center/middle",
+                Size = "Large",
+                Color = "Brown",
+                IsSterile = false,
+                Gender = "female",
+                DateOfBirth = DateTime.Now.Date.AddMonths(-11),
+                AgeInMonths = 11,
+                DateOfAdoption = DateTime.Now.Date.AddMonths(-1),
+                AcquisitionMethod = "test",
+                DiscoveryMethod = "test",
+                DiscoveryMethodDetail = "This is not a real pet, just a test"
+                //Species, PrimaryBreed, SecondaryBreed, FoodPrefDry, FoodPrefWet
+            };
+
+            Pet returnPet = target.CreatePet((int)returnUser.Id, newPet);
+            Assert.IsNotNull(returnPet, "CreatePet gets valid response");
+            Assert.IsNotNull(returnPet.Id, "CreatePet sets Id");
+            Assert.IsTrue(returnPet.Name == newPet.Name, "CreatePet returns correct data");
+
+            returnPet.Size = "Small";
+
+            Pet updatePet = target.UpdatePet((int)returnUser.Id, (int)returnPet.Id, returnPet);
+            Assert.IsNotNull(updatePet, "UpdatePet gets valid response");
+            Assert.IsTrue(updatePet.Id == returnPet.Id, "UpdatePet returns correct record");
+            Assert.IsTrue(updatePet.Size == returnPet.Size, "UpdatePet returns correct data");
+
+            List<Pet> pets = target.FindPetsByUserId((int)returnUser.Id) as List<Pet>;
+
+            Assert.IsNotNull(pets, "FindPetsByUserId gets valid response");
+            Assert.IsTrue(pets.Count > 1, "FindPetsByUserId returns data");
+
+            Console.WriteLine("First object: " + pets[0].Id + " = " + pets[0].Name);
+
+            Pet pet = target.FindPetById((int)returnUser.Id, (int)pets.Last().Id);
+
+            Assert.IsNotNull(pet, "FindPetById gets valid response");
+            Assert.IsTrue(pet.Id == pets.Last().Id, "FindPetById returns data");
+
+            Console.WriteLine("Pet object: " + pet.Id + " = " + pet.Name);
+
+            Assert.IsTrue(target.DeletePet((int)returnUser.Id, (int)pet.Id));
+        }
+
+        #endregion
+
+        #region Content Method Tests
+
+        [TestMethod()]
+        public void ContentGroupTest()
+        {
+            Assert.Inconclusive("Test not implemented");
         }
 
         [TestMethod()]
-        public void ProductionTest()
+        public void ContentNodeTest()
         {
-            ApiClient target = new ApiClient(clientId, clientSecret, false);
-
-            User prodUser = target.FindUserByEmail("kiehnet@netscape.net");
-            Assert.IsNotNull(prodUser, "FindUserByEmail does not retrieve deleted user");
-            
-            prodUser.FirstName = Guid.NewGuid().ToString("N");
-            User updateUser = target.UpdateUser(prodUser);
-            Assert.IsNotNull(updateUser, "UpdateUser gets valid response");
-            Assert.IsNotNull(updateUser.Uuid, "UpdateUser sets UUID");
-            Assert.IsTrue(updateUser.FirstName == prodUser.FirstName, "UpdateUser returns updated object");
-
+            Assert.Inconclusive("Test not implemented");
         }
+
+        [TestMethod()]
+        public void ContentPlacementTest()
+        {
+            Assert.Inconclusive("Test not implemented");
+        }
+
+        [TestMethod()]
+        public void ContentTaxonomyTest()
+        {
+            Assert.Inconclusive("Test not implemented");
+        }
+
+        [TestMethod()]
+        public void ContentZoneTest()
+        {
+            Assert.Inconclusive("Test not implemented");
+        }
+        #endregion
+
+        #region Event Method Tests
+
+        [TestMethod()]
+        public void ActionTypeTest()
+        {
+            Assert.Inconclusive("Test not implemented");
+        }
+
+        [TestMethod()]
+        public void EventTypeTest()
+        {
+            Assert.Inconclusive("Test not implemented");
+        }
+
+        #endregion
     }
 }

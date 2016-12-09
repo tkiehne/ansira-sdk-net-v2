@@ -14,7 +14,7 @@ namespace Ansira.Objects
     public class SourceCode
     {
         [JsonProperty(PropertyName = "key")]
-        public int Id { get; set; }
+        public int Id { get; set; } // TODO: verify if is int or string
 
         [JsonProperty(PropertyName = "name")]
         public string Name { get; set; }

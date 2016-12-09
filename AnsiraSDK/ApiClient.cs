@@ -262,103 +262,103 @@ namespace Ansira
         //GET /api/v2/contentgroup/find Finds a specific content group
         public object FindContentGroup()
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
         ///api/v2/contentgroup/{id}
         //Retrieves a specific content group
         public object FindContentGroupById(int id)
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
         ///api/v2/contentgroups
         //GET /api/v2/contentgroups Retrieves a simple list of content groups
         public object GetContentGroups()
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
         ///api/v2/contentgroups/find
         //GET /api/v2/contentgroups/find Finds a simple list of content groups
         public object FindContentGroups()
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
         ///api/v2/contentnode/{id}
         //GET /api/v2/contentnode/{id} Retrieves a specific content
         public object FindContentNodeById(int id)
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
         ///api/v2/contentnode/{id}/category
         //GET /api/v2/contentnode/{id}/category Retrieves a specific content, category only
         public object FindContentNodeCategoryById(int id)
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
         ///api/v2/contentnode/{id}/tags
         //GET /api/v2/contentnode/{id}/tags Retrieves a specific content, tags only
         public object FindContentNodeTagsById(int id)
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
         ///api/v2/contentnodes/find
         //GET /api/v2/contentnodes/find Retrieves a list of contents
         public object FindContentNodes()
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
         ///api/v2/contentplacement/{id}
         //GET /api/v2/contentplacement/{id} Retrieves a specific content placement
         public object FindContentPlacementById(int id)
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
         ///api/v2/contentplacements
         //GET /api/v2/contentplacements Retrieves a list of all content placements
         public object GetContentPlacements()
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
         ///api/v2/contentplacements/find
         //GET /api/v2/contentplacements/find Retrieves a list of ContentPlacements
         public object FindContentPlacements()
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
         ///api/v2/contenttaxonomy/{id}
         //GET /api/v2/contenttaxonomy/{id} Retrieves a specific content taxonomy
         public object FindContentTaxonomyById(int id)
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
         ///api/v2/contenttaxonomys
         //GET /api/v2/contenttaxonomys Retrieves a list of all content taxonomys
         public object GetContentTaxonomys()
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
         ///api/v2/contenttaxonomys/find
         //GET /api/v2/contenttaxonomys/find Retrieves a list of ContentTaxonomys
         public object FindContentTaxonomys()
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
         ///api/v2/contentzone/{id}
         //GET /api/v2/contentzone/{id} Retrieves a specific content zone
         public object FindContentZoneById(int id)
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
         ///api/v2/contentzones
         //GET /api/v2/contentzones Retrieves a list of all content zones
         public object GetContentZones()
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
         ///api/v2/contentzones/find
         //GET /api/v2/contentzones/find Retrieves a list of ContentZones
         public object FindContentZones()
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
 
         #endregion
@@ -369,25 +369,25 @@ namespace Ansira
         // GET /api/v2/actiontypes Retrieves a list of action types available for use with our Events API method.
         public object GetActionTypes()
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
         // /api/v2/actiontypes/{ id}
         // GET /api/v2/actiontypes/{id} Retrieves an action type
         public object FindActionTypeById(int id)
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
         // /api/v2/eventtypes
         // GET /api/v2/eventtypes Provides a list of event types to be leveraged by the Events API method.
         public object GetEventTypes()
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
         // /api/v2/eventtypes/{id}
         // GET /api/v2/eventtypes/{id} Retrieve an event type
         public object FindEventTypeById(int id)
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
 
         #endregion
@@ -443,27 +443,27 @@ namespace Ansira
 
         // /api/v2/petfoods
         // GET /api/v2/petfoods Provides a standardized list of pet food brands.
-        public object GetPetFoods()
+        public IList<PetFood> GetPetFoods()
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
         // /api/v2/petfoods/{id}
         // GET /api/v2/petfoods/{id} Retrieve a pet food
-        public object FindPetFoodById(int id)
+        public PetFood FindPetFoodById(int id)
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
         // /api/v2/petownershipplans
         // GET /api/v2/petownershipplans Retrieve list of pet ownership plans
-        public object GetOwnershipPlans()
+        public IList<PetOwnershipPlan> GetOwnershipPlans()
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
         // /api/v2/petownershipplans/{id}
-        // GET /api/v2/petownershipplans/{id} Retrieve a pet type
-        public object FindOwnershipPlanById(int id)
+        // GET /api/v2/petownershipplans/{id} Retrieve a pet ownership plan
+        public PetOwnershipPlan FindOwnershipPlanById(int id)
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -541,28 +541,28 @@ namespace Ansira
         }
 
         // POST /api/v2/users/{user_id}/pets Creates user's pet
-        public object CreatePet(int userId)
+        public Pet CreatePet(int userId, Pet pet)
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
 
         // DELETE /api/v2/users/{user_id}/pets/{pet_id} Delete pet
-        public object DeletePet(int userId, int petId)
+        public bool DeletePet(int userId, int petId)
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
 
         // GET /api/v2/users/{user_id}/pets/{pet_id} Retrieves a user's pet
-        public object FindPetById(int userId, int petId)
+        public Pet FindPetById(int userId, int petId)
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
 
         // PATCH /api/v2/users/{user_id}/pets/{pet_id} Update pet by ID
         // PUT /api/v2/users/{user_id}/pets/{pet_id} Update pet by ID
-        public object UpdatePet(int userId, int petId)
+        public Pet UpdatePet(int userId, int petId, Pet pet)
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
 
         #endregion
@@ -636,9 +636,9 @@ namespace Ansira
 
         // PATCH /api/v2/users/{user_id}/subscriptions Updates a user subscription
         // PUT /api/v2/users/{user_id}/subscriptions Updates user subscription
-        public object UpdateUserSubscription(int userId)
+        public bool UpdateUserSubscription(int userId)
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -681,9 +681,9 @@ namespace Ansira
 
         // /api/v2/users/{user_id}/subscriptions/{brand_code}
         // DELETE /api/v2/users/{user_id}/subscriptions/{brand_code} Unsubscribe user
-        public object DeleteUserSubscriptionByBrand(int userId, string brandId)
+        public bool DeleteUserSubscriptionByBrand(int userId, string brandId)
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -721,15 +721,15 @@ namespace Ansira
 
         // PATCH /api/v2/users/{user_id}/subscriptions/{brand_code} Updates a user subscription
         // PUT /api/v2/users/{user_id}/subscriptions/{brand_code} Updates user subscription
-        public object UpdateUserSubscriptionByBrand(int userId, string brandId)
+        public bool UpdateUserSubscriptionByBrand(int userId, string brandId)
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
 
         // POST /api/v2/users/{user_id}/subscriptions/{brand_code} Create user subscription
-        public object CreateUserSubscriptionByBrand(int userId, string brandId)
+        public bool CreateUserSubscriptionByBrand(int userId, string brandId)
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
 
         #endregion
@@ -930,13 +930,13 @@ namespace Ansira
         /// </summary>
         /// <param name="user">Ansira.Objects.User with non-null UUID</param>
         /// <exception cref="System.ArgumentNullException">Thrown when User is null</exception>
-        public void DeleteUser(User user)
+        public bool DeleteUser(User user)
         {
             if (user == null)
             {
                 throw new ArgumentNullException("user", "User must not be null");
             }
-            this.DeleteUser((int)user.Id);
+            return this.DeleteUser((int)user.Id);
         }
 
         /// <summary>
@@ -945,7 +945,7 @@ namespace Ansira
         /// <remarks>https://profiles.purina.com/service/apidoc#delete--api-v2-users-{id}</remarks>
         /// <param name="id">ID integer</param>
         /// <exception cref="System.ArgumentNullException">Thrown when ID is null</exception>
-        public void DeleteUser(int id)
+        public bool DeleteUser(int id)
         {
             if (String.IsNullOrEmpty(id.ToString()))
             {
@@ -953,6 +953,14 @@ namespace Ansira
             }
             string method = String.Format("users/{0}", id);
             string results = CallApiDelete(method, null);
+            if(results == null)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
 
         /// <summary>
@@ -1000,7 +1008,7 @@ namespace Ansira
         /// <remarks>https://profiles.purina.com/service/apidoc#delete--api-v2-users-{user_id}-address</remarks>
         /// <param name="userId">ID integer for user</param>
         /// <exception cref="System.ArgumentNullException">Thrown when ID is null</exception>
-        public void DeleteUserAddress(int userId)
+        public bool DeleteUserAddress(int userId)
         {
             if (String.IsNullOrEmpty(userId.ToString()))
             {
@@ -1008,6 +1016,14 @@ namespace Ansira
             }
             string method = String.Format("users/{0}/address", userId);
             string results = CallApiDelete(method, null);
+            if(results == null)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
 
         /// <summary>
@@ -1039,40 +1055,40 @@ namespace Ansira
 
         // PATCH /api/v2/users/{user_id}/address Updates a user's address
         // PUT /api/v2/users/{user_id}/address Updates a user's address
-        public object UpdateUserAddress(int userId)
+        public bool UpdateUserAddress(int userId)
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
 
         // POST /api/v2/users/{user_id}/address Creates/updates a user's address
-        public object CreateUserAddress(int userId)
+        public Address CreateUserAddress(int userId)
         {
-            return this.UpdateUserSubscription(userId);
+            throw new NotImplementedException();
         }
 
         // /api/v2/users/{user_id}/currency
         // GET /api/v2/users/{user_id}/currency Get user currency
-        public object FindCurrencyByUserId(int userId)
+        public Currency FindCurrencyByUserId(int userId)
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
         // /api/v2/users/{user_id}/language
         // GET /api/v2/users/{user_id}/language Get user language
-        public object FindLanguageByUserId(int userId)
+        public Language FindLanguageByUserId(int userId)
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
         // /api/v2/users/{user_id}/lastsourcecode
         // GET /api/v2/users/{user_id}/lastsourcecode Get user last source code
-        public object FindLastSourceCodeByUserId(int userId)
+        public SourceCode FindLastSourceCodeByUserId(int userId)
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
         // /api/v2/users/{user_id}/nationality
         // GET /api/v2/users/{user_id}/nationality Get user locale
-        public object FindNationalityByUserId(int userId)
+        public Country FindNationalityByUserId(int userId)
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -1147,15 +1163,15 @@ namespace Ansira
 
         // /api/v2/users/{user_id}/petownershipplan
         // GET /api/v2/users/{user_id}/petownershipplan Get user's pet ownership plan
-        public object FindOwnershipPlanByUserId(int userId)
+        public PetOwnershipPlan FindOwnershipPlanByUserId(int userId)
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
         // /api/v2/users/{user_id}/sourcecode
         // GET /api/v2/users/{user_id}/sourcecode Get user source code
-        public object FindSourceCodeByUserId(int userId)
+        public SourceCode FindSourceCodeByUserId(int userId)
         {
-            return new NotImplementedException();
+            throw new NotImplementedException();
         }
 
         #endregion
