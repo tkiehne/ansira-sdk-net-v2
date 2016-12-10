@@ -12,6 +12,9 @@ namespace Ansira.Objects
     /// </summary>
     public class Country
     {
+        [JsonProperty(PropertyName = "id")]
+        public int Id { get; set; }
+
         [JsonProperty(PropertyName = "name")]
         [Required(AllowEmptyStrings = false)]
         [MinLength(2)]

@@ -1505,33 +1505,6 @@ namespace Ansira
         }
 
         /// <summary>
-        /// Find User's Last Source Code by User ID
-        /// </summary>
-        /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-users-{user_id}-lastsourcecode</remarks>
-        /// <param name="userId">ID integer</param>
-        /// <returns>Ansira.Objects.SourceCode</returns>
-        /// <exception cref="System.ArgumentNullException">Thrown when ID is null</exception>
-        public SourceCode FindLastSourceCodeByUserId(int userId)
-        {
-            if (String.IsNullOrEmpty(userId.ToString()))
-            {
-                throw new ArgumentNullException("userId", "ID must not be null");
-            }
-            string method = String.Format("users/{0}/lastsourcecode", userId);
-            string results = CallApi(method, null);
-
-            if (results != null)
-            {
-                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
-                return JsonConvert.DeserializeObject<SourceCode>(JsonConvert.SerializeObject(response.Results));
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        /// <summary>
         /// Find User's Country by User ID
         /// </summary>
         /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-users-{user_id}-nationality</remarks>
@@ -1551,6 +1524,87 @@ namespace Ansira
             {
                 ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
                 return JsonConvert.DeserializeObject<Country>(JsonConvert.SerializeObject(response.Results));
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Find User's Pet Ownership Plan by User ID
+        /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-users-{user_id}-petownershipplan</remarks>
+        /// <param name="userId">ID integer</param>
+        /// <returns>Ansira.Objects.PetOwnershipPlan</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when ID is null</exception>
+        public PetOwnershipPlan FindOwnershipPlanByUserId(int userId)
+        {
+            if (String.IsNullOrEmpty(userId.ToString()))
+            {
+                throw new ArgumentNullException("userId", "ID must not be null");
+            }
+            string method = String.Format("users/{0}/petownershipplan", userId);
+            string results = CallApi(method, null);
+
+            if (results != null)
+            {
+                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
+                return JsonConvert.DeserializeObject<PetOwnershipPlan>(JsonConvert.SerializeObject(response.Results));
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Find User's Source Code by User ID
+        /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-users-{user_id}-sourcecode</remarks>
+        /// <param name="userId">ID integer</param>
+        /// <returns>Ansira.Objects.SourceCode</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when ID is null</exception>
+        public SourceCode FindSourceCodeByUserId(int userId)
+        {
+            if (String.IsNullOrEmpty(userId.ToString()))
+            {
+                throw new ArgumentNullException("userId", "ID must not be null");
+            }
+            string method = String.Format("users/{0}/sourcecode", userId);
+            string results = CallApi(method, null);
+
+            if (results != null)
+            {
+                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
+                return JsonConvert.DeserializeObject<SourceCode>(JsonConvert.SerializeObject(response.Results));
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Find User's Last Source Code by User ID
+        /// </summary>
+        /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-users-{user_id}-lastsourcecode</remarks>
+        /// <param name="userId">ID integer</param>
+        /// <returns>Ansira.Objects.SourceCode</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when ID is null</exception>
+        public SourceCode FindLastSourceCodeByUserId(int userId)
+        {
+            if (String.IsNullOrEmpty(userId.ToString()))
+            {
+                throw new ArgumentNullException("userId", "ID must not be null");
+            }
+            string method = String.Format("users/{0}/lastsourcecode", userId);
+            string results = CallApi(method, null);
+
+            if (results != null)
+            {
+                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
+                return JsonConvert.DeserializeObject<SourceCode>(JsonConvert.SerializeObject(response.Results));
             }
             else
             {
@@ -1627,61 +1681,7 @@ namespace Ansira
                 return false;
             }
         }
-
-        /// <summary>
-        /// Find User's Pet Ownership Plan by User ID
-        /// </summary>
-        /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-users-{user_id}-petownershipplan</remarks>
-        /// <param name="userId">ID integer</param>
-        /// <returns>Ansira.Objects.PetOwnershipPlan</returns>
-        /// <exception cref="System.ArgumentNullException">Thrown when ID is null</exception>
-        public PetOwnershipPlan FindOwnershipPlanByUserId(int userId)
-        {
-            if (String.IsNullOrEmpty(userId.ToString()))
-            {
-                throw new ArgumentNullException("userId", "ID must not be null");
-            }
-            string method = String.Format("users/{0}/petownershipplan", userId);
-            string results = CallApi(method, null);
-
-            if (results != null)
-            {
-                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
-                return JsonConvert.DeserializeObject<PetOwnershipPlan>(JsonConvert.SerializeObject(response.Results));
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Find User's Source Code by User ID
-        /// </summary>
-        /// <remarks>https://profiles.purina.com/service/apidoc#get--api-v2-users-{user_id}-sourcecode</remarks>
-        /// <param name="userId">ID integer</param>
-        /// <returns>Ansira.Objects.SourceCode</returns>
-        /// <exception cref="System.ArgumentNullException">Thrown when ID is null</exception>
-        public SourceCode FindSourceCodeByUserId(int userId)
-        {
-            if (String.IsNullOrEmpty(userId.ToString()))
-            {
-                throw new ArgumentNullException("userId", "ID must not be null");
-            }
-            string method = String.Format("users/{0}/sourcecode", userId);
-            string results = CallApi(method, null);
-
-            if (results != null)
-            {
-                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
-                return JsonConvert.DeserializeObject<SourceCode>(JsonConvert.SerializeObject(response.Results));
-            }
-            else
-            {
-                return null;
-            }
-        }
-
+        
         #endregion
 
         #region Internationalization Methods
