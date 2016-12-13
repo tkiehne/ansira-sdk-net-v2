@@ -17,7 +17,7 @@ namespace Ansira
     {
         public string uatUrl = "https://uat-purinareg.ansiradigital.com/api/v2/";
         public string prodUrl = "https://profiles.purina.com/api/v2/";
-        protected string apiUrl, clientId, clientSecret;
+        protected string apiUrl, clientId, clientSecret, accessToken;
         protected List<string> validMethods;
 
         /// <summary>
@@ -49,6 +49,8 @@ namespace Ansira
             this.clientSecret = clientSecret;
 
             validMethods = new List<string>() { "GET", "POST", "PUT", "PATCH", "DELETE" };
+
+            // TODO: get access_token via OAuth & cache
         }
 
         #region Utility Methods
@@ -57,7 +59,7 @@ namespace Ansira
         /// Calls an API endpoint and returns results
         /// </summary>
         /// <param name="endpoint">API endpoint to call</param>
-        /// <param name="data">Additional POST data as NameValueCollection</param>
+        /// <param name="data">Additional data as NameValueCollection</param>
         /// <param name="method">HTTP verb to use; defaults to GET</param>
         /// <returns>Response JSON as string or null if no results</returns>
         /// <exception cref="System.ArgumentNullException">Thrown when API endpoint is null</exception>
@@ -77,9 +79,8 @@ namespace Ansira
             string endpointUrl = this.apiUrl + endpoint;
 
             NameValueCollection message = new NameValueCollection();
-            message.Add("client_id", this.clientId); // TODO: replace with access_token
-            message.Add("client_sec", this.clientSecret);
-            message.Add("_format", "json"); // TODO: verify return format
+            message.Add("access_token", this.accessToken);
+            //message.Add("_format", "json"); // JSON by default - enable this to change format
             if (data != null)
             {
                 message.Add(data);
@@ -87,14 +88,14 @@ namespace Ansira
 
             WebClient client = new WebClient();
             byte[] output = client.UploadValues(endpointUrl, method, message);
-
+            
             string apiResponse = Encoding.UTF8.GetString(output);
 
             Response response = JsonConvert.DeserializeObject<Response>(apiResponse);
 
             if (response.Status == 1)
             {
-                /* TODO: Disabled until Ansira harmonizes their responses; although we may have an edge case that precludes this
+                /* TODO: Disabled until Ansira harmonizes their responses
                 return JsonConvert.SerializeObject(response.Results);
                  */
                 return apiResponse; // TEMP
@@ -104,46 +105,51 @@ namespace Ansira
         }
 
         /// <summary>
-        /// Calls an API endpoint via POST and returns results
+        /// Calls an API endpoint and returns results
         /// </summary>
         /// <param name="endpoint">API endpoint to call</param>
-        /// <param name="data">Additional POST data as NameValueCollection</param>
+        /// <param name="data">Additional data as JSON string</param>
+        /// <param name="method">HTTP verb to use; defaults to POST</param>
         /// <returns>Response JSON as string or null if no results</returns>
-        /// <exception cref="System.ArgumentNullException">Thrown when API Method is null</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when API endpoint is null</exception>
         /// <exception cref="System.Net.WebException">Thrown when network operation fails</exception>
-        protected string CallApiPost(string endpoint, NameValueCollection data)
+        /// <exception cref="System.ArgumentException">Thrown when HTTP method is unsupported</exception>
+        protected string CallApi(string endpoint, string data, string method = "POST")
         {
-            return CallApi(endpoint, data, "POST");
-        }
+            if (String.IsNullOrEmpty(endpoint))
+            {
+                throw new ArgumentNullException("endpoint", "API endpoint must not be null");
+            }
+            if (!validMethods.Contains(method))
+            {
+                throw new ArgumentException("method", "HTTP method is not supported");
+            }
 
-        /// <summary>
-        /// Calls an API endpoint via PUT and returns results
-        /// </summary>
-        /// <param name="endpoint">API endpoint to call</param>
-        /// <param name="data">Additional POST data as NameValueCollection</param>
-        /// <returns>Response JSON as string or null if no results</returns>
-        /// <exception cref="System.ArgumentNullException">Thrown when API Method is null</exception>
-        /// <exception cref="System.Net.WebException">Thrown when network operation fails</exception>
-        protected string CallApiPut(string endpoint, NameValueCollection data)
-        {
-            return CallApi(endpoint, data, "PUT");
-        }
+            string endpointUrl = this.apiUrl + endpoint;
 
-        /// <summary>
-        /// Calls an API endpoint via PATCH and returns results
-        /// </summary>
-        /// <param name="endpoint">API endpoint to call</param>
-        /// <param name="data">Additional POST data as NameValueCollection</param>
-        /// <returns>Response JSON as string or null if no results</returns>
-        /// <exception cref="System.ArgumentNullException">Thrown when API Method is null</exception>
-        /// <exception cref="System.Net.WebException">Thrown when network operation fails</exception>
-        protected string CallApiPatch(string endpoint, NameValueCollection data)
-        {
-            return CallApi(endpoint, data, "PATCH");
+            NameValueCollection message = new NameValueCollection();
+            message.Add("access_token", this.accessToken);
+            //message.Add("_format", "json"); // JSON by default - enable this to change format
+
+            WebClient client = new WebClient();
+            string apiResponse = client.UploadString(endpointUrl, method, data);
+
+            Response response = JsonConvert.DeserializeObject<Response>(apiResponse);
+
+            if (response.Status == 1)
+            {
+                /* TODO: Disabled until Ansira harmonizes their responses
+                return JsonConvert.SerializeObject(response.Results);
+                 */
+                return apiResponse; // TEMP
+            }
+
+            return null;
         }
 
         /// <summary>
         /// Calls an API endpoint via DELETE and returns results
+        /// <para>Invokes <see cref="CallApi(System.String, System.Collections.Specialized.NameValueCollection, System.String)"/></para>
         /// </summary>
         /// <param name="endpoint">API endpoint to call</param>
         /// <param name="data">Additional POST data as NameValueCollection</param>
@@ -154,6 +160,49 @@ namespace Ansira
         {
             return CallApi(endpoint, data, "DELETE");
         }
+
+        /// <summary>
+        /// Calls an API endpoint via POST and returns results
+        /// <para>Invokes <see cref="CallApi(System.String, System.String, System.String)"/></para>
+        /// </summary>
+        /// <param name="endpoint">API endpoint to call</param>
+        /// <param name="data">Additional POST data as string</param>
+        /// <returns>Response JSON as string or null if no results</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when API Method is null</exception>
+        /// <exception cref="System.Net.WebException">Thrown when network operation fails</exception>
+        protected string CallApiPost(string endpoint, string data)
+        {
+            return CallApi(endpoint, data, "POST");
+        }
+
+        /// <summary>
+        /// Calls an API endpoint via PUT and returns results
+        /// <para>Invokes <see cref="CallApi(System.String, System.String, System.String)"/></para>
+        /// </summary>
+        /// <param name="endpoint">API endpoint to call</param>
+        /// <param name="data">Additional PUT data as string</param>
+        /// <returns>Response JSON as string or null if no results</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when API Method is null</exception>
+        /// <exception cref="System.Net.WebException">Thrown when network operation fails</exception>
+        protected string CallApiPut(string endpoint, string data)
+        {
+            return CallApi(endpoint, data, "PUT");
+        }
+
+        /// <summary>
+        /// Calls an API endpoint via PATCH and returns results
+        /// <para>Invokes <see cref="CallApi(System.String, System.String, System.String)"/></para>
+        /// </summary>
+        /// <param name="endpoint">API endpoint to call</param>
+        /// <param name="data">Additional PATCH data as string</param>
+        /// <returns>Response JSON as string or null if no results</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when API Method is null</exception>
+        /// <exception cref="System.Net.WebException">Thrown when network operation fails</exception>
+        protected string CallApiPatch(string endpoint, string data)
+        {
+            return CallApi(endpoint, data, "PATCH");
+        }
+
 
         #endregion
 
@@ -166,7 +215,7 @@ namespace Ansira
         /// <returns>IList of Ansira.Objects.Brand objects or null if none</returns>
         public IList<Brand> GetBrands()
         {
-            string results = CallApi("brands", null);
+            string results = CallApi("brands", new NameValueCollection());
 
             if (results != null)
             {
@@ -193,7 +242,7 @@ namespace Ansira
                 throw new ArgumentNullException("id", "ID must not be null");
             }
             string method = String.Format("brands/{0}", id);
-            string results = CallApi(method, null);
+            string results = CallApi(method, new NameValueCollection());
 
             if (results != null)
             {
@@ -214,7 +263,7 @@ namespace Ansira
         /// <returns>IList of Ansira.Objects.SourceCode objects or null if none</returns>
         public IList<SourceCode> GetSourceCodes()
         {
-            string results = CallApi("sourcecodes", null);
+            string results = CallApi("sourcecodes", new NameValueCollection());
 
             if (results != null)
             {
@@ -241,7 +290,7 @@ namespace Ansira
                 throw new ArgumentNullException("id", "ID must not be null");
             }
             string method = String.Format("sourcecodes/{0}", id);
-            string results = CallApi(method, null);
+            string results = CallApi(method, new NameValueCollection());
 
             if (results != null)
             {
@@ -401,7 +450,7 @@ namespace Ansira
         /// <returns>IList of Ansira.Objects.Breed objects or null if none</returns>
         public IList<Breed> GetBreeds()
         {
-            string results = CallApi("breeds", null);
+            string results = CallApi("breeds", new NameValueCollection());
 
             if (results != null)
             {
@@ -428,7 +477,7 @@ namespace Ansira
                 throw new ArgumentNullException("id", "ID must not be null");
             }
             string method = String.Format("breeds/{0}", id);
-            string results = CallApi(method, null);
+            string results = CallApi(method, new NameValueCollection());
 
             if (results != null)
             {
@@ -448,7 +497,7 @@ namespace Ansira
         /// <returns>IList of Ansira.Objects.PetFood objects or null if none</returns>
         public IList<PetFood> GetPetFoods()
         {
-            string results = CallApi("petfoods", null);
+            string results = CallApi("petfoods", new NameValueCollection());
 
             if (results != null)
             {
@@ -475,7 +524,7 @@ namespace Ansira
                 throw new ArgumentNullException("id", "ID must not be null");
             }
             string method = String.Format("petfoods/{0}", id);
-            string results = CallApi(method, null);
+            string results = CallApi(method, new NameValueCollection());
 
             if (results != null)
             {
@@ -495,7 +544,7 @@ namespace Ansira
         /// <returns>IList of Ansira.Objects.PetOwnershipPlan objects or null if none</returns>
         public IList<PetOwnershipPlan> GetOwnershipPlans()
         {
-            string results = CallApi("petownershipplans", null);
+            string results = CallApi("petownershipplans", new NameValueCollection());
 
             if (results != null)
             {
@@ -522,7 +571,7 @@ namespace Ansira
                 throw new ArgumentNullException("id", "ID must not be null");
             }
             string method = String.Format("petownershipplans/{0}", id);
-            string results = CallApi(method, null);
+            string results = CallApi(method, new NameValueCollection());
 
             if (results != null)
             {
@@ -542,7 +591,7 @@ namespace Ansira
         /// <returns>IList of Ansira.Objects.PetType objects or null if none</returns>
         public IList<PetType> GetPetTypes()
         {
-            string results = CallApi("pettypes", null);
+            string results = CallApi("pettypes", new NameValueCollection());
 
             if (results != null)
             {
@@ -569,7 +618,7 @@ namespace Ansira
                 throw new ArgumentNullException("id", "ID must not be null");
             }
             string method = String.Format("pettypes/{0}", id);
-            string results = CallApi(method, null);
+            string results = CallApi(method, new NameValueCollection());
 
             if (results != null)
             {
@@ -596,7 +645,7 @@ namespace Ansira
                 throw new ArgumentNullException("userId", "ID must not be null");
             }
             string method = String.Format("users/{0}/pets", userId);
-            string results = CallApi(method, null);
+            string results = CallApi(method, new NameValueCollection());
 
             if (results != null)
             {
@@ -628,18 +677,12 @@ namespace Ansira
                 throw new ArgumentNullException("userId", "User ID must not be null");
             }
             // TODO: Validate Pet
-
-            NameValueCollection data = new NameValueCollection();
-
+            
             // pass through JSON to get correct parameters
             string record = JsonConvert.SerializeObject(pet, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-            var tmp = new Object();
-            JsonConvert.PopulateObject(record, tmp);
-
-            tmp.GetType().GetProperties().ToList().ForEach(pi => data.Add(pi.Name, (pi.GetValue(tmp, null) ?? "").ToString()));
             
             string method = String.Format("users/{0}/pets", userId);
-            string results = CallApiPost(method, data);
+            string results = CallApiPost(method, record);
             if (results != null)
             {
                 ResponseV3 response = JsonConvert.DeserializeObject<ResponseV3>(results); // TEMP?
@@ -700,7 +743,7 @@ namespace Ansira
                 throw new ArgumentNullException("petId", "Pet ID must not be null");
             }
             string method = String.Format("users/{0}/pets/{1}", userId, petId);
-            string results = CallApi(method, null);
+            string results = CallApi(method, new NameValueCollection());
 
             if (results != null)
             {
@@ -736,18 +779,11 @@ namespace Ansira
                 throw new ArgumentNullException("userId", "User ID must not be null");
             }
             // TODO: Validate Pet
-
-            NameValueCollection data = new NameValueCollection();
-
-            // pass through JSON to get correct parameters
+            
             string record = JsonConvert.SerializeObject(pet, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-            var tmp = new Object();
-            JsonConvert.PopulateObject(record, tmp);
-
-            tmp.GetType().GetProperties().ToList().ForEach(pi => data.Add(pi.Name, (pi.GetValue(tmp, null) ?? "").ToString()));
 
             string method = String.Format("users/{0}/pets/{1}", userId, pet.Id);
-            string results = CallApiPut(method, data); // TODO: Put vs Patch
+            string results = CallApiPut(method, record); // TODO: Put vs Patch
             if (results != null)
             {
                 ResponseV3 response = JsonConvert.DeserializeObject<ResponseV3>(results); // TEMP?
@@ -815,7 +851,7 @@ namespace Ansira
                 throw new ArgumentNullException("userId", "ID must not be null");
             }
             string method = String.Format("users/{0}/subscriptions", userId);
-            string results = CallApi(method, null);
+            string results = CallApi(method, new NameValueCollection());
 
             if (results != null)
             {
@@ -846,16 +882,11 @@ namespace Ansira
             {
                 throw new ArgumentNullException("brandCodes", "Must supply at least one brand code");
             }
-            NameValueCollection data = new NameValueCollection();
 
-            // assuming URL-type array and not JSON
-            for (var i = 0; i < brandCodes.Count - 1; i++)
-            {
-                data.Add("subscriptions[" + i + "]", brandCodes[i]);
-            }
+            string record = JsonConvert.SerializeObject(brandCodes, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
             string method = String.Format("users/{0}/subscriptions", userId);
-            string results = CallApiPut(method, data); // TODO: verify Put and Patch are the same
+            string results = CallApiPut(method, record); // TODO: verify Put and Patch are the same
             if (results != null)
             {
                 return true;
@@ -884,16 +915,11 @@ namespace Ansira
             {
                 throw new ArgumentNullException("brandCodes", "Must supply at least one brand code");
             }
-            NameValueCollection data = new NameValueCollection();
 
-            // assuming URL-type array and not JSON
-            for (var i = 0; i < brandCodes.Count - 1; i++)
-            {
-                data.Add("subscriptions[" + i + "]", brandCodes[i]);
-            }
-            
+            string record = JsonConvert.SerializeObject(brandCodes, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+
             string method = String.Format("users/{0}/subscriptions", userId);
-            string results = CallApiPost(method, data);
+            string results = CallApiPost(method, record);
             if (results != null)
             {
                 return true;
@@ -957,7 +983,7 @@ namespace Ansira
                 throw new ArgumentNullException("brandId", "ID must not be null");
             }
             string method = String.Format("users/{0}/subscriptions/{1}", userId, brandId);
-            string results = CallApi(method, null);
+            string results = CallApi(method, new NameValueCollection());
 
             if (results != null)
             {
@@ -1056,7 +1082,7 @@ namespace Ansira
             NameValueCollection data = new NameValueCollection();
             data.Add("uuid", uuid);
             */
-            string results = CallApi("users", null);
+            string results = CallApi("users", new NameValueCollection());
 
             if (results != null)
             {
@@ -1083,7 +1109,7 @@ namespace Ansira
                 throw new ArgumentNullException("id", "ID must not be null");
             }
             string method = String.Format("users/{0}", id);
-            string results = CallApi(method, null);
+            string results = CallApi(method, new NameValueCollection());
 
             if (results != null)
             {
@@ -1211,15 +1237,9 @@ namespace Ansira
             // TODO: validate User
 
             NameValueCollection data = new NameValueCollection();
-
-            // pass through JSON to get correct parameters
             string record = JsonConvert.SerializeObject(user, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-            var tmp = new Object();
-            JsonConvert.PopulateObject(record, tmp);
-
-            tmp.GetType().GetProperties().ToList().ForEach(pi => data.Add(pi.Name, (pi.GetValue(tmp, null) ?? "").ToString()));
-
-            string results = CallApiPost("users", data);
+            
+            string results = CallApiPost("users", record);
             if (results != null)
             {
                 ResponseV3 response = JsonConvert.DeserializeObject<ResponseV3>(results); // TEMP?
@@ -1291,15 +1311,10 @@ namespace Ansira
 
             NameValueCollection data = new NameValueCollection();
 
-            // pass through JSON to get correct parameters
             string record = JsonConvert.SerializeObject(user, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-            var tmp = new Object();
-            JsonConvert.PopulateObject(record, tmp);
-
-            tmp.GetType().GetProperties().ToList().ForEach(pi => data.Add(pi.Name, (pi.GetValue(tmp, null) ?? "").ToString()));
 
             string method = String.Format("users/{0}", user.Id);
-            string results = CallApiPut(method, data); // *** TODO: verify that Patch & Put are the same
+            string results = CallApiPut(method, record); // *** TODO: verify that Patch & Put are the same
             if (results != null)
             {
                 ResponseV3 response = JsonConvert.DeserializeObject<ResponseV3>(results); // TEMP?
@@ -1349,7 +1364,7 @@ namespace Ansira
                 throw new ArgumentNullException("userId", "ID must not be null");
             }
             string method = String.Format("users/{0}/address", userId);
-            string results = CallApi(method, null);
+            string results = CallApi(method, new NameValueCollection());
 
             if (results != null)
             {
@@ -1387,16 +1402,11 @@ namespace Ansira
             // TODO: Validate address
 
             NameValueCollection data = new NameValueCollection();
-
-            // pass through JSON to get correct parameters
+            
             string record = JsonConvert.SerializeObject(address, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-            var tmp = new Object();
-            JsonConvert.PopulateObject(record, tmp);
-
-            tmp.GetType().GetProperties().ToList().ForEach(pi => data.Add(pi.Name, (pi.GetValue(tmp, null) ?? "").ToString()));
 
             string method = String.Format("users/{0}/address/{1}", userId, address.Id);
-            string results = CallApiPut(method, data); // TODO: verify if Put and Patch are identical
+            string results = CallApiPut(method, record); // TODO: verify if Put and Patch are identical
             if (results != null)
             {
                 ResponseV3 response = JsonConvert.DeserializeObject<ResponseV3>(results); // TEMP?
@@ -1429,16 +1439,11 @@ namespace Ansira
             // TODO: Validate Address
 
             NameValueCollection data = new NameValueCollection();
-
-            // pass through JSON to get correct parameters
+            
             string record = JsonConvert.SerializeObject(address, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-            var tmp = new Object();
-            JsonConvert.PopulateObject(record, tmp);
-
-            tmp.GetType().GetProperties().ToList().ForEach(pi => data.Add(pi.Name, (pi.GetValue(tmp, null) ?? "").ToString()));
 
             string method = String.Format("users/{0}/address", userId);
-            string results = CallApiPost(method, data);
+            string results = CallApiPost(method, record);
             if (results != null)
             {
                 ResponseV3 response = JsonConvert.DeserializeObject<ResponseV3>(results); // TEMP?
@@ -1464,7 +1469,7 @@ namespace Ansira
                 throw new ArgumentNullException("userId", "ID must not be null");
             }
             string method = String.Format("users/{0}/currency", userId);
-            string results = CallApi(method, null);
+            string results = CallApi(method, new NameValueCollection());
 
             if (results != null)
             {
@@ -1491,7 +1496,7 @@ namespace Ansira
                 throw new ArgumentNullException("userId", "ID must not be null");
             }
             string method = String.Format("users/{0}/language", userId);
-            string results = CallApi(method, null);
+            string results = CallApi(method, new NameValueCollection());
 
             if (results != null)
             {
@@ -1518,7 +1523,7 @@ namespace Ansira
                 throw new ArgumentNullException("userId", "ID must not be null");
             }
             string method = String.Format("users/{0}/nationality", userId);
-            string results = CallApi(method, null);
+            string results = CallApi(method, new NameValueCollection());
 
             if (results != null)
             {
@@ -1545,7 +1550,7 @@ namespace Ansira
                 throw new ArgumentNullException("userId", "ID must not be null");
             }
             string method = String.Format("users/{0}/petownershipplan", userId);
-            string results = CallApi(method, null);
+            string results = CallApi(method, new NameValueCollection());
 
             if (results != null)
             {
@@ -1572,7 +1577,7 @@ namespace Ansira
                 throw new ArgumentNullException("userId", "ID must not be null");
             }
             string method = String.Format("users/{0}/sourcecode", userId);
-            string results = CallApi(method, null);
+            string results = CallApi(method, new NameValueCollection());
 
             if (results != null)
             {
@@ -1599,7 +1604,7 @@ namespace Ansira
                 throw new ArgumentNullException("userId", "ID must not be null");
             }
             string method = String.Format("users/{0}/lastsourcecode", userId);
-            string results = CallApi(method, null);
+            string results = CallApi(method, new NameValueCollection());
 
             if (results != null)
             {
@@ -1633,8 +1638,11 @@ namespace Ansira
 
             NameValueCollection data = new NameValueCollection();
             data.Add("password", password);
+
+            string record = JsonConvert.SerializeObject(data, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+
             string method = String.Format("users/{0}/password/change", userId);
-            string results = CallApiPost(method, data);
+            string results = CallApiPost(method, record);
 
             if (results != null)
             {
@@ -1668,8 +1676,10 @@ namespace Ansira
 
             NameValueCollection data = new NameValueCollection();
             data.Add("password", password);
+            string record = JsonConvert.SerializeObject(data, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+
             string method = String.Format("users/{0}/password/verify", userId);
-            string results = CallApiPost(method, data);
+            string results = CallApiPost(method, record);
 
             if (results != null)
             {
@@ -1693,7 +1703,7 @@ namespace Ansira
         /// <returns>IList of Ansira.Objects.Country objects or null if none</returns>
         public IList<Country> GetCountries()
         {
-            string results = CallApi("countries", null);
+            string results = CallApi("countries", new NameValueCollection());
 
             if (results != null)
             {
@@ -1720,7 +1730,7 @@ namespace Ansira
                 throw new ArgumentNullException("id", "ID must not be null");
             }
             string method = String.Format("countries/{0}", id);
-            string results = CallApi(method, null);
+            string results = CallApi(method, new NameValueCollection());
 
             if (results != null)
             {
@@ -1740,7 +1750,7 @@ namespace Ansira
         /// <returns>IList of Ansira.Objects.Currency objects or null if none</returns>
         public IList<Currency> GetCurrencies()
         {
-            string results = CallApi("currencies", null);
+            string results = CallApi("currencies", new NameValueCollection());
 
             if (results != null)
             {
@@ -1767,7 +1777,7 @@ namespace Ansira
                 throw new ArgumentNullException("id", "ID must not be null");
             }
             string method = String.Format("currencies/{0}", id);
-            string results = CallApi(method, null);
+            string results = CallApi(method, new NameValueCollection());
 
             if (results != null)
             {
@@ -1787,7 +1797,7 @@ namespace Ansira
         /// <returns>IList of Ansira.Objects.Language objects or null if none</returns>
         public IList<Language> GetLanguages()
         {
-            string results = CallApi("languages", null);
+            string results = CallApi("languages", new NameValueCollection());
 
             if (results != null)
             {
@@ -1814,7 +1824,7 @@ namespace Ansira
                 throw new ArgumentNullException("id", "ID must not be null");
             }
             string method = String.Format("languages/{0}", id);
-            string results = CallApi(method, null);
+            string results = CallApi(method, new NameValueCollection());
 
             if (results != null)
             {
