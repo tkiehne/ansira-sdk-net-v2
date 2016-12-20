@@ -17,7 +17,6 @@ namespace AnsiraSDKTests
         private TestContext testContextInstance;
 
         private string _clientId, _clientSecret;
-        private SourceCode _sourceCode;
         private ApiClient _target;
 
         /// <summary>
@@ -56,10 +55,15 @@ namespace AnsiraSDKTests
         {
             this._clientId = ConfigurationManager.AppSettings["Test.Client.Id"];
             this._clientSecret = ConfigurationManager.AppSettings["Test.Client.Secret"];
-            this._sourceCode = new SourceCode() { Id = 1, KeyName = "TS", Name = "Test" };
+            Assert.IsNotNull(this._clientId);
+            Assert.IsNotNull(this._clientSecret);
 
             this._target = new ApiClient(_clientId, _clientSecret, true);
             Assert.IsNotNull(_target);
+
+            string token =_target.GetAccessToken();
+            Assert.IsNotNull(token);
+            Assert.IsNotNull(_target.AccessToken);
         }
 
         //Use TestCleanup to run code after each test has run
@@ -87,7 +91,6 @@ namespace AnsiraSDKTests
             Assert.IsTrue(updateUser.FirstName == prodUser.FirstName, "UpdateUser returns updated object");
 
         }
-
         #endregion
 
         #region User Method Tests
@@ -123,7 +126,6 @@ namespace AnsiraSDKTests
             {
                 LastName = "User",
                 FirstName = "Test",
-                SourceCode = _sourceCode,
                 Email = Guid.NewGuid().ToString("N") + "@fosfor.us",
                 Address = new Address()
                 {
@@ -167,7 +169,6 @@ namespace AnsiraSDKTests
                 LastName = "User",
                 MiddleName = "T",
                 FirstName = "Test",
-                SourceCode = _sourceCode,
                 Email = Guid.NewGuid().ToString("N") + "@fosfor.us",
                 // Password should be handled via OAuth or similar, not via API
                 DogCount = 1,
@@ -197,7 +198,6 @@ namespace AnsiraSDKTests
 
             user.Pets.Add(new Pet()
             {
-                SourceCode = _sourceCode,
                 Name = "Tester",
                 ImageUrl = "https://www.purina.com/media/284062/Akitas_2913.jpg/560/0/center/middle",
                 Size = "Large",
@@ -220,7 +220,6 @@ namespace AnsiraSDKTests
             Assert.IsTrue(returnUser.LastName == user.LastName, "CreateUser returns correct data");
             Assert.IsTrue(returnUser.MiddleName == user.MiddleName, "CreateUser returns correct data");
             Assert.IsTrue(returnUser.FirstName == user.FirstName, "CreateUser returns correct data");
-            Assert.IsTrue(returnUser.SourceCode.Id == _sourceCode.Id, "CreateUser returns correct data");
             Assert.IsTrue(returnUser.Email == user.Email, "CreateUser returns correct data");
             Assert.IsTrue(returnUser.DogCount == user.DogCount, "CreateUser returns correct data");
             Assert.IsTrue(returnUser.CatCount == user.CatCount, "CreateUser returns correct data");
@@ -245,7 +244,6 @@ namespace AnsiraSDKTests
 
             Assert.IsNotNull(returnUser.Pets);
             Assert.IsNotNull(returnUser.Pets[0]);
-            Assert.IsTrue(returnUser.Pets[0].SourceCode.KeyName == _sourceCode.KeyName, "CreateUser returns correct Pets data");
             Assert.IsTrue(returnUser.Pets[0].Name == user.Pets[0].Name, "CreateUser returns correct Pets data");
             Assert.IsTrue(returnUser.Pets[0].ImageUrl == user.Pets[0].ImageUrl, "CreateUser returns correct Pets data");
             Assert.IsTrue(returnUser.Pets[0].Size == user.Pets[0].Size, "CreateUser returns correct Pets data");
@@ -343,7 +341,6 @@ namespace AnsiraSDKTests
             {
                 LastName = "User",
                 FirstName = "Test",
-                SourceCode = _sourceCode,
                 Email = Guid.NewGuid().ToString("N") + "@fosfor.us",
                 Password = password
             };
@@ -378,7 +375,6 @@ namespace AnsiraSDKTests
             {
                 LastName = "User",
                 FirstName = "Test",
-                SourceCode = _sourceCode,
                 Email = "tkiehne@fosfor.us",
             };
 
@@ -434,7 +430,6 @@ namespace AnsiraSDKTests
             {
                 LastName = "User",
                 FirstName = "Test",
-                SourceCode = _sourceCode,
                 Email = "tkiehne@fosfor.us",
                 Address = new Address()
                 {
@@ -614,7 +609,6 @@ namespace AnsiraSDKTests
             {
                 LastName = "PetUser",
                 FirstName = "Test",
-                SourceCode = _sourceCode,
                 Email = Guid.NewGuid().ToString("N") + "@fosfor.us",
                 Address = new Address()
                 {
@@ -632,7 +626,6 @@ namespace AnsiraSDKTests
 
             Pet newPet = new Pet()
             {
-                SourceCode = _sourceCode,
                 Name = "Tester",
                 ImageUrl = "https://www.purina.com/media/284062/Akitas_2913.jpg/560/0/center/middle",
                 Size = "Large",
@@ -695,7 +688,6 @@ namespace AnsiraSDKTests
             {
                 LastName = "User",
                 FirstName = "Test",
-                SourceCode = _sourceCode,
                 Email = Guid.NewGuid().ToString("N") + "@fosfor.us",
                 Nationality = testCountry,
                 Currency = testCurrency,
@@ -830,6 +822,37 @@ namespace AnsiraSDKTests
         public void EventTypeTest()
         {
             Assert.Inconclusive("Test not implemented");
+        }
+
+        #endregion
+
+        #region Coupon API Tests
+
+        /// <summary>
+        ///A test for RegisterCoupon
+        ///</summary>
+        [TestMethod()]
+        public void InsertCouponTest()
+        {
+            CouponUser user = new CouponUser()
+            {
+                LastName = "User",
+                FirstName = "Test",
+                Email = "tom@fosforus.com", // Guid.NewGuid().ToString("N") + "@fosfor.us",
+                Address1 = "209 E 6th",
+                City = "Austin",
+                State = "TX",
+                PostalCode = "78701",
+                PetType = "DOG",
+                OptIn = false
+            };
+
+            User returnUser = _target.RegisterCoupon(user, 52, "PC-AAP-SAMPLING");
+
+            Assert.IsNotNull(returnUser, "RegisterCoupon gets valid response");
+            Assert.IsTrue(returnUser.Email == user.Email, "RegisterCoupon returns updated object");
+            Assert.IsNotNull(returnUser.Uuid, "RegisterCoupon sets UUID");
+            Console.WriteLine("Returned Object: UUID = " + returnUser.Uuid);
         }
 
         #endregion

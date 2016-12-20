@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Net;
+using System.Net.Cache;
 using System.Text;
 using Ansira.Objects;
 using Newtonsoft.Json;
@@ -15,9 +16,11 @@ namespace Ansira
     /// </summary>
     public class ApiClient
     {
-        public string uatUrl = "https://uat-purinareg.ansiradigital.com/api/v2/";
-        public string prodUrl = "https://profiles.purina.com/api/v2/";
-        protected string apiUrl, clientId, clientSecret, accessToken;
+        public string uatUrl = "https://uat-purinareg.ansiradigital.com/service/api/v2/";
+        public string prodUrl = "https://profiles.purina.com/service/api/v2/";
+        public string uatOAuthUrl = "https://uat-purinareg.ansiradigital.com/service/oauth/v2/";
+        public string prodOAuthUrl = "https://profiles.purina.com/service/oauth/v2/";
+        protected string apiUrl, oAuthUrl, clientId, clientSecret;
         protected List<string> validMethods;
 
         /// <summary>
@@ -40,20 +43,57 @@ namespace Ansira
             if (uat == true)
             {
                 this.apiUrl = uatUrl;
+                this.oAuthUrl = uatOAuthUrl;
             }
             else
             {
                 this.apiUrl = prodUrl;
+                this.oAuthUrl = prodOAuthUrl;
             }
             this.clientId = clientId;
             this.clientSecret = clientSecret;
 
             validMethods = new List<string>() { "GET", "POST", "PUT", "PATCH", "DELETE" };
-
-            // TODO: get access_token via OAuth & cache
         }
 
         #region Utility Methods
+        
+        public string AccessToken { get; set; }
+        public DateTime AccessTokenExpires { get; set; }
+
+        /// <summary>
+        /// Calls OAuth API and retrieves access token for use in subsequent requests
+        /// <para>User should locally cache token for API calls.</para>
+        /// <para>Token expires at DateTime <see cref="AccessTokenExpires"/></para>
+        /// </summary>
+        /// <returns>Access token as string or null if no results</returns>
+        /// <exception cref="System.Net.WebException">Thrown when network operation fails</exception>
+        public string GetAccessToken()
+        {
+            string endpointUrl = this.oAuthUrl + "token";
+
+            NameValueCollection message = new NameValueCollection();
+            message.Add("client_id", this.clientId);
+            message.Add("client_secret", this.clientSecret);
+            message.Add("grant_type", "client_credentials");
+
+            WebClient client = new WebClient();
+            RequestCachePolicy policy = new RequestCachePolicy(RequestCacheLevel.NoCacheNoStore);
+            client.CachePolicy = policy;
+            client.QueryString = message;
+            string apiResponse = client.DownloadString(endpointUrl);
+
+            AccessToken response = JsonConvert.DeserializeObject<AccessToken>(apiResponse);
+
+            if (!String.IsNullOrEmpty(response.Token))
+            {
+                AccessToken = response.Token;
+                AccessTokenExpires = DateTime.Now.AddSeconds(response.Expires);
+                return response.Token;
+            }
+
+            return null;
+        }
 
         /// <summary>
         /// Calls an API endpoint and returns results
@@ -79,21 +119,32 @@ namespace Ansira
             string endpointUrl = this.apiUrl + endpoint;
 
             NameValueCollection message = new NameValueCollection();
-            message.Add("access_token", this.accessToken);
+            message.Add("access_token", AccessToken);
             //message.Add("_format", "json"); // JSON by default - enable this to change format
             if (data != null)
             {
                 message.Add(data);
             }
 
+            byte[] output;
             WebClient client = new WebClient();
-            byte[] output = client.UploadValues(endpointUrl, method, message);
+            RequestCachePolicy policy = new RequestCachePolicy(RequestCacheLevel.NoCacheNoStore);
+            client.CachePolicy = policy;
+            if (method == "GET")
+            {
+                client.QueryString = message;
+                output = client.DownloadData(endpointUrl);
+            }
+            else
+            {
+                output = client.UploadValues(endpointUrl, method, message);
+            }
             
             string apiResponse = Encoding.UTF8.GetString(output);
 
             Response response = JsonConvert.DeserializeObject<Response>(apiResponse);
 
-            if (response.Status == 1)
+            if (response.Status)
             {
                 /* TODO: Disabled until Ansira harmonizes their responses
                 return JsonConvert.SerializeObject(response.Results);
@@ -128,15 +179,19 @@ namespace Ansira
             string endpointUrl = this.apiUrl + endpoint;
 
             NameValueCollection message = new NameValueCollection();
-            message.Add("access_token", this.accessToken);
+            message.Add("access_token", AccessToken);
             //message.Add("_format", "json"); // JSON by default - enable this to change format
 
             WebClient client = new WebClient();
+            RequestCachePolicy policy = new RequestCachePolicy(RequestCacheLevel.NoCacheNoStore);
+            client.CachePolicy = policy;
+            client.Headers.Add("Content-Type", "application/json");
+            client.QueryString = message;
             string apiResponse = client.UploadString(endpointUrl, method, data);
 
             Response response = JsonConvert.DeserializeObject<Response>(apiResponse);
 
-            if (response.Status == 1)
+            if (response.Status)
             {
                 /* TODO: Disabled until Ansira harmonizes their responses
                 return JsonConvert.SerializeObject(response.Results);
@@ -686,7 +741,7 @@ namespace Ansira
             if (results != null)
             {
                 ResponseV3 response = JsonConvert.DeserializeObject<ResponseV3>(results); // TEMP?
-                return JsonConvert.DeserializeObject<Pet>(JsonConvert.SerializeObject(response.Record.Results));
+                return new Pet(); // JsonConvert.DeserializeObject<Pet>(JsonConvert.SerializeObject(response.Record.Results));
             }
             else
             {
@@ -787,7 +842,7 @@ namespace Ansira
             if (results != null)
             {
                 ResponseV3 response = JsonConvert.DeserializeObject<ResponseV3>(results); // TEMP?
-                return JsonConvert.DeserializeObject<Pet>(JsonConvert.SerializeObject(response.Record.Results));
+                return new Pet(); // JsonConvert.DeserializeObject<Pet>(JsonConvert.SerializeObject(response.Record.Results));
             }
             else
             {
@@ -1243,7 +1298,7 @@ namespace Ansira
             if (results != null)
             {
                 ResponseV3 response = JsonConvert.DeserializeObject<ResponseV3>(results); // TEMP?
-                return JsonConvert.DeserializeObject<User>(JsonConvert.SerializeObject(response.Record.Results));
+                return JsonConvert.DeserializeObject<User>(JsonConvert.SerializeObject(response.Record));
             }
             else
             {
@@ -1318,7 +1373,7 @@ namespace Ansira
             if (results != null)
             {
                 ResponseV3 response = JsonConvert.DeserializeObject<ResponseV3>(results); // TEMP?
-                return JsonConvert.DeserializeObject<User>(JsonConvert.SerializeObject(response.Record.Results));
+                return JsonConvert.DeserializeObject<User>(JsonConvert.SerializeObject(response.Record));
             }
             else
             {
@@ -1410,7 +1465,7 @@ namespace Ansira
             if (results != null)
             {
                 ResponseV3 response = JsonConvert.DeserializeObject<ResponseV3>(results); // TEMP?
-                return JsonConvert.DeserializeObject<Address>(JsonConvert.SerializeObject(response.Record.Results));
+                return JsonConvert.DeserializeObject<Address>(JsonConvert.SerializeObject(response.Record));
             }
             else
             {
@@ -1447,7 +1502,7 @@ namespace Ansira
             if (results != null)
             {
                 ResponseV3 response = JsonConvert.DeserializeObject<ResponseV3>(results); // TEMP?
-                return JsonConvert.DeserializeObject<Address>(JsonConvert.SerializeObject(response.Record.Results));
+                return JsonConvert.DeserializeObject<Address>(JsonConvert.SerializeObject(response.Record));
             }
             else
             {
@@ -1684,7 +1739,7 @@ namespace Ansira
             if (results != null)
             {
                 ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
-                return response.Status == 1 ? true : false; // TODO: what does this method return?
+                return response.Status; // TODO: what does this method return?
             }
             else
             {
@@ -1830,6 +1885,54 @@ namespace Ansira
             {
                 ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
                 return JsonConvert.DeserializeObject<Language>(JsonConvert.SerializeObject(response.Results));
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        #endregion
+
+        #region Coupons API
+
+        /// <summary>
+        /// Create a new User in the Ansira Coupons API
+        /// </summary>
+        /// <param name="user">Ansira.Objects.CouponUser</param>
+        /// <param name="campaignId">Campaign ID integer</param>
+        /// <param name="offerCode">Offer Code string</param>
+        /// <returns>Ansira.Objects.User or null if error</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when User, Campaign Code or Id, or Email is null</exception>
+        public User RegisterCoupon(CouponUser user, int campaignId, string offerCode)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException("user", "User must not be null");
+            }
+            if (String.IsNullOrEmpty(user.Email))
+            {
+                throw new ArgumentNullException("user.Email", "Email must not be null");
+            }
+            if (String.IsNullOrEmpty(campaignId.ToString()))
+            {
+                throw new ArgumentNullException("campaignId", "Campaign ID must not be null");
+            }
+            if (String.IsNullOrEmpty(offerCode))
+            {
+                throw new ArgumentNullException("offerCode", "Offer Code must not be null");
+            }
+            // TODO: validate CouponUser
+
+            NameValueCollection data = new NameValueCollection();
+            string record = JsonConvert.SerializeObject(user, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+
+            string method = string.Format("coupons/{0}/{1}", campaignId.ToString(), offerCode);
+            string results = CallApiPost(method, record);
+            if (results != null)
+            {
+                ResponseV3 response = JsonConvert.DeserializeObject<ResponseV3>(results); // TEMP?
+                return JsonConvert.DeserializeObject<User>(JsonConvert.SerializeObject(response.Record));
             }
             else
             {

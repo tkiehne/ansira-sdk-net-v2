@@ -11,8 +11,8 @@ namespace Ansira.Objects
   /// </summary>
   public class Response
   {
-    [JsonProperty(PropertyName="status")]
-    public int Status { get; set; }
+    [JsonProperty(PropertyName = "success")]
+    public bool Status { get; set; }
     /* overridden in subclasses until Ansira fixes their reponse formats
     [JsonProperty(PropertyName = "msg")]
     public List<string> Message { get; set; }

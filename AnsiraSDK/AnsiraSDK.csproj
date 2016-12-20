@@ -50,11 +50,13 @@
   <ItemGroup>
     <Compile Include="ApiClient.cs" />
     <Compile Include="Converters\MonthDayYearDateConverter.cs" />
+    <Compile Include="Objects\AccessToken.cs" />
     <Compile Include="Objects\Address.cs" />
     <Compile Include="Objects\Application.cs" />
     <Compile Include="Objects\Brand.cs" />
     <Compile Include="Objects\Breed.cs" />
     <Compile Include="Objects\Country.cs" />
+    <Compile Include="Objects\CouponUser.cs" />
     <Compile Include="Objects\Currency.cs" />
     <Compile Include="Objects\Language.cs" />
     <Compile Include="Objects\Pet.cs" />
