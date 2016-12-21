@@ -285,7 +285,7 @@ namespace Ansira
 
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<IList<Brand>>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<IList<Brand>>(results);
             }
             else
             {
@@ -311,7 +311,7 @@ namespace Ansira
 
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<Brand>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<Brand>(results);
             }
             else
             {
@@ -331,7 +331,7 @@ namespace Ansira
 
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<IList<SourceCode>>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<IList<SourceCode>>(results);
             }
             else
             {
@@ -357,7 +357,7 @@ namespace Ansira
 
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<SourceCode>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<SourceCode>(results);
             }
             else
             {
@@ -516,7 +516,7 @@ namespace Ansira
 
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<IList<Breed>>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<IList<Breed>>(results);
             }
             else
             {
@@ -542,7 +542,7 @@ namespace Ansira
 
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<Breed>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<Breed>(results);
             }
             else
             {
@@ -561,7 +561,7 @@ namespace Ansira
 
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<IList<PetFood>>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<IList<PetFood>>(results);
             }
             else
             {
@@ -587,7 +587,7 @@ namespace Ansira
 
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<PetFood>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<PetFood>(results);
             }
             else
             {
@@ -606,7 +606,7 @@ namespace Ansira
 
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<IList<PetOwnershipPlan>>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<IList<PetOwnershipPlan>>(results);
             }
             else
             {
@@ -632,7 +632,7 @@ namespace Ansira
 
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<PetOwnershipPlan>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<PetOwnershipPlan>(results);
             }
             else
             {
@@ -651,7 +651,7 @@ namespace Ansira
 
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<IList<PetType>>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<IList<PetType>>(results);
             }
             else
             {
@@ -677,7 +677,7 @@ namespace Ansira
 
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<PetType>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<PetType>(results);
             }
             else
             {
@@ -703,7 +703,7 @@ namespace Ansira
 
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<IList<Pet>>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<IList<Pet>>(results);
             }
             else
             {
@@ -738,7 +738,7 @@ namespace Ansira
             string results = CallApiPost(method, record);
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<Pet>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<Pet>(results);
             }
             else
             {
@@ -799,7 +799,7 @@ namespace Ansira
 
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<Pet>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<Pet>(results);
             }
             else
             {
@@ -837,7 +837,7 @@ namespace Ansira
             string results = CallApiPut(method, record); // TODO: Put vs Patch
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<Pet>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<Pet>(results);
             }
             else
             {
@@ -905,7 +905,7 @@ namespace Ansira
 
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<IList<Subscription>>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<IList<Subscription>>(results);
             }
             else
             {
@@ -1036,7 +1036,7 @@ namespace Ansira
 
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<IList<Subscription>>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<IList<Subscription>>(results);
             }
             else
             {
@@ -1134,7 +1134,7 @@ namespace Ansira
 
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<IList<User>>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<IList<User>>(results);
             }
             else
             {
@@ -1160,7 +1160,7 @@ namespace Ansira
 
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<User>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<IList<User>>(results)[0];
             }
             else
             {
@@ -1187,7 +1187,7 @@ namespace Ansira
 
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<User>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<IList<User>>(results)[0];
             }
             else
             {
@@ -1216,7 +1216,7 @@ namespace Ansira
 
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<User>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<IList<User>>(results)[0];
             }
             else
             {
@@ -1252,7 +1252,7 @@ namespace Ansira
 
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<User>(JsonConvert.SerializeObject(results)); // TODO: this may be a list instead of a single object?
+                return JsonConvert.DeserializeObject<IList<User>>(results)[0];
             }
             else
             {
@@ -1285,7 +1285,7 @@ namespace Ansira
             string results = CallApiPost("users", record);
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<User>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<User>(results);
             }
             else
             {
@@ -1359,7 +1359,7 @@ namespace Ansira
             string results = CallApiPut(method, record); // *** TODO: verify that Patch & Put are the same
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<User>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<User>(results);
             }
             else
             {
@@ -1409,7 +1409,7 @@ namespace Ansira
 
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<Address>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<Address>(results);
             }
             else
             {
@@ -1449,7 +1449,7 @@ namespace Ansira
             string results = CallApiPut(method, record); // TODO: verify if Put and Patch are identical
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<Address>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<Address>(results);
             }
             else
             {
@@ -1485,7 +1485,7 @@ namespace Ansira
             string results = CallApiPost(method, record);
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<Address>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<Address>(results);
             }
             else
             {
@@ -1511,7 +1511,7 @@ namespace Ansira
 
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<Currency>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<Currency>(results);
             }
             else
             {
@@ -1537,7 +1537,7 @@ namespace Ansira
 
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<Language>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<Language>(results);
             }
             else
             {
@@ -1563,7 +1563,7 @@ namespace Ansira
 
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<Country>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<Country>(results);
             }
             else
             {
@@ -1589,7 +1589,7 @@ namespace Ansira
 
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<PetOwnershipPlan>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<PetOwnershipPlan>(results);
             }
             else
             {
@@ -1615,7 +1615,7 @@ namespace Ansira
 
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<SourceCode>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<SourceCode>(results);
             }
             else
             {
@@ -1641,7 +1641,7 @@ namespace Ansira
 
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<SourceCode>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<SourceCode>(results);
             }
             else
             {
@@ -1678,7 +1678,7 @@ namespace Ansira
 
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<User>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<User>(results);
             }
             else
             {
@@ -1737,7 +1737,7 @@ namespace Ansira
 
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<IList<Country>>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<IList<Country>>(results);
             }
             else
             {
@@ -1763,7 +1763,7 @@ namespace Ansira
 
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<Country>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<Country>(results);
             }
             else
             {
@@ -1782,7 +1782,7 @@ namespace Ansira
 
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<IList<Currency>>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<IList<Currency>>(results);
             }
             else
             {
@@ -1808,7 +1808,7 @@ namespace Ansira
 
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<Currency>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<Currency>(results);
             }
             else
             {
@@ -1827,7 +1827,7 @@ namespace Ansira
 
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<IList<Language>>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<IList<Language>>(results);
             }
             else
             {
@@ -1853,7 +1853,7 @@ namespace Ansira
 
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<Language>(JsonConvert.SerializeObject(results));
+                return JsonConvert.DeserializeObject<Language>(results);
             }
             else
             {

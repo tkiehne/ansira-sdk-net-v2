@@ -321,11 +321,11 @@ namespace AnsiraSDKTests
         [TestMethod()]
         public void FindUserByUuidTest()
         {
-            User user = _target.FindUserByUuid("f3804062-8248-11e4-8559-22000a8b39f0");
+            User user = _target.FindUserByUuid("745eb509-b2fe-11e5-bab5-22000bcc02f5");
 
             Assert.IsNotNull(user, "FindUserByUuid gets valid response");
             Assert.IsNotNull(user.Uuid, "FindUserByEmail set UUID");
-            Assert.IsTrue(user.Uuid == "f3804062-8248-11e4-8559-22000a8b39f0", "FindUserByUuid returns valid object");
+            Assert.IsTrue(user.Uuid == "745eb509-b2fe-11e5-bab5-22000bcc02f5", "FindUserByUuid returns valid object");
 
             Console.WriteLine("Object: Email = " + user.Email);
         }
@@ -517,10 +517,10 @@ namespace AnsiraSDKTests
 
             Console.WriteLine("First object: " + codes[0].Id + " = " + codes[0].Name);
 
-            SourceCode code = _target.FindSourceCodeById(codes.Last().KeyName); // TODO: get actual code
+            SourceCode code = _target.FindSourceCodeById(codes.First().KeyName); // TODO: get actual code
 
             Assert.IsNotNull(code, "FindSourceCodeById gets valid response");
-            Assert.IsTrue(code.Id == codes.Last().Id, "FindSourceCodeById returns data"); // TODO: verify id type
+            Assert.IsTrue(code.KeyName == codes.First().KeyName, "FindSourceCodeById returns data"); // TODO: verify id type
 
             Console.WriteLine("Object: " + code.Id + " = " + code.Name);
         }
@@ -705,7 +705,7 @@ namespace AnsiraSDKTests
         public void UserI18NTest()
         {
             Country testCountry = new Country() { KeyName = "DE", Name = "Germany" };
-            Language testLanguage = new Language() { KeyName = "es", Name = "Espanol", EnglishName = "Spanish" };
+            Language testLanguage = new Language() { KeyName = "de", Name = "Deutsch", EnglishName = "German" };
             Currency testCurrency = new Currency() { KeyName = "USD", Name = "US Dollar" };
 
             User user = new User()
