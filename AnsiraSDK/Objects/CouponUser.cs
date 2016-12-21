@@ -13,6 +13,9 @@ namespace Ansira.Objects
     /// </summary>
     public class CouponUser
     {
+        [JsonProperty(PropertyName = "uuid")]
+        public string Uuid { get; set; }
+
         [Required(AllowEmptyStrings = false)]
         [JsonProperty(PropertyName = "email")]
         [RegularExpression(@"^([^@\s]+)@((?:[-a-zA-Z0-9]+\.)+[a-zA-Z]{2,})$", ErrorMessage = "Email is not valid")]

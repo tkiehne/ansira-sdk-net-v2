@@ -24,6 +24,6 @@ namespace Ansira.Objects
 
         [JsonProperty(PropertyName = "optedInAt")]
         [JsonConverter(typeof(MonthDayYearDateConverter))]
-        public DateTime OptedInAt { get; set; }
+        public DateTime? OptedInAt { get; set; }
     }
 }

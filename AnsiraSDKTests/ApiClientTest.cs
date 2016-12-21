@@ -133,6 +133,10 @@ namespace AnsiraSDKTests
                     City = "Austin",
                     State = "TX",
                     PostalCode = "78701"
+                },
+                SourceCode = new SourceCode()
+                {
+                    KeyName = "PF_Subscriptions-1"
                 }
             };
 
@@ -191,6 +195,10 @@ namespace AnsiraSDKTests
                     Country = new Country() { Name = "United States", KeyName = "US" },
                     Latitude = 30.267298,
                     Longitude = -97.7433287
+                },
+                SourceCode = new SourceCode()
+                {
+                    KeyName = "PF_Subscriptions-1"
                 }
             };
 
@@ -281,11 +289,11 @@ namespace AnsiraSDKTests
         [TestMethod()]
         public void FindUserByEmailTest()
         {
-            User user = _target.FindUserByEmail("tkiehne@fosforus.net");
+            User user = _target.FindUserByEmail("tom@fosforus.com");
 
             Assert.IsNotNull(user, "FindUserByEmail gets valid response");
             Assert.IsNotNull(user.Uuid, "FindUserByEmail set UUID");
-            Assert.IsTrue(user.Email == "tkiehne@fosforus.net", "FindUserByEmail returns valid object");
+            Assert.IsTrue(user.Email == "tom@fosforus.com", "FindUserByEmail returns valid object");
 
             Console.WriteLine("Object: UUID = " + user.Uuid);
         }
@@ -342,7 +350,11 @@ namespace AnsiraSDKTests
                 LastName = "User",
                 FirstName = "Test",
                 Email = Guid.NewGuid().ToString("N") + "@fosfor.us",
-                Password = password
+                Password = password,
+                SourceCode = new SourceCode()
+                {
+                    KeyName = "PF_Subscriptions-1"
+                }
             };
 
             User returnUser = _target.CreateUser(user);
@@ -376,6 +388,10 @@ namespace AnsiraSDKTests
                 LastName = "User",
                 FirstName = "Test",
                 Email = "tkiehne@fosfor.us",
+                SourceCode = new SourceCode()
+                {
+                    KeyName = "PF_Subscriptions-1"
+                }
             };
 
             User returnUser = _target.CreateUser(user);
@@ -437,6 +453,10 @@ namespace AnsiraSDKTests
                     City = "Austin",
                     State = "TX",
                     PostalCode = "78701"
+                },
+                SourceCode = new SourceCode()
+                {
+                    KeyName = "PF_Subscriptions-1"
                 }
             };
 
@@ -543,7 +563,7 @@ namespace AnsiraSDKTests
 
             Console.WriteLine("First object: " + types[0].Id + " = " + types[0].KeyName);
 
-            PetType type = _target.FindPetTypeById(types.Last().Id);
+            PetType type = _target.FindPetTypeById((int)types.Last().Id);
 
             Assert.IsNotNull(type, "FindPetTypeById gets valid response");
             Assert.IsTrue(type.Id == types.Last().Id, "FindPetTypeById returns data");
@@ -591,7 +611,7 @@ namespace AnsiraSDKTests
 
             Console.WriteLine("First object: " + plans[0].Id + " = " + plans[0].KeyName);
 
-            PetOwnershipPlan plan = _target.FindOwnershipPlanById(plans.Last().Id);
+            PetOwnershipPlan plan = _target.FindOwnershipPlanById((int)plans.Last().Id);
 
             Assert.IsNotNull(plan, "FindOwnershipPlanById gets valid response");
             Assert.IsTrue(plan.Id == plans.Last().Id, "FindOwnershipPlanById returns data");
@@ -616,6 +636,10 @@ namespace AnsiraSDKTests
                     City = "Austin",
                     State = "TX",
                     PostalCode = "78701"
+                },
+                SourceCode = new SourceCode()
+                {
+                    KeyName = "PF_Subscriptions-1"
                 }
             };
 
@@ -691,7 +715,11 @@ namespace AnsiraSDKTests
                 Email = Guid.NewGuid().ToString("N") + "@fosfor.us",
                 Nationality = testCountry,
                 Currency = testCurrency,
-                Language = testLanguage
+                Language = testLanguage,
+                SourceCode = new SourceCode()
+                {
+                    KeyName = "PF_Subscriptions-1"
+                }
             };
 
             User returnUser = _target.CreateUser(user);

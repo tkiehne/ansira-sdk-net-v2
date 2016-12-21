@@ -7,6 +7,7 @@ using System.Text;
 using Ansira.Objects;
 using Newtonsoft.Json;
 using System.Linq;
+using System.IO;
 
 namespace Ansira
 {
@@ -139,17 +140,22 @@ namespace Ansira
             {
                 output = client.UploadValues(endpointUrl, method, message);
             }
-            
-            string apiResponse = Encoding.UTF8.GetString(output);
 
-            Response response = JsonConvert.DeserializeObject<Response>(apiResponse);
+            try
+            { 
+                string apiResponse = Encoding.UTF8.GetString(output);
 
-            if (response.Status)
+                return apiResponse; 
+            }
+            catch (WebException exception)
             {
-                /* TODO: Disabled until Ansira harmonizes their responses
-                return JsonConvert.SerializeObject(response.Results);
-                 */
-                return apiResponse; // TEMP
+                string responseText;
+
+                using (var reader = new StreamReader(exception.Response.GetResponseStream()))
+                {
+                    responseText = reader.ReadToEnd();
+                }
+                ResponseError response = JsonConvert.DeserializeObject<ResponseError>(responseText);
             }
 
             return null;
@@ -187,16 +193,21 @@ namespace Ansira
             client.CachePolicy = policy;
             client.Headers.Add("Content-Type", "application/json");
             client.QueryString = message;
-            string apiResponse = client.UploadString(endpointUrl, method, data);
-
-            Response response = JsonConvert.DeserializeObject<Response>(apiResponse);
-
-            if (response.Status)
+            try
             {
-                /* TODO: Disabled until Ansira harmonizes their responses
-                return JsonConvert.SerializeObject(response.Results);
-                 */
-                return apiResponse; // TEMP
+                string apiResponse = client.UploadString(endpointUrl, method, data);
+                
+                return apiResponse;
+            }
+            catch (WebException exception)
+            {
+                string responseText;
+
+                using (var reader = new StreamReader(exception.Response.GetResponseStream()))
+                {
+                    responseText = reader.ReadToEnd();
+                }
+                ResponseError response = JsonConvert.DeserializeObject<ResponseError>(responseText);
             }
 
             return null;
@@ -274,8 +285,7 @@ namespace Ansira
 
             if (results != null)
             {
-                ResponseV1 response = JsonConvert.DeserializeObject<ResponseV1>(results); // TEMP
-                return JsonConvert.DeserializeObject<IList<Brand>>(JsonConvert.SerializeObject(response.Result));
+                return JsonConvert.DeserializeObject<IList<Brand>>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -301,8 +311,7 @@ namespace Ansira
 
             if (results != null)
             {
-                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
-                return JsonConvert.DeserializeObject<Brand>(JsonConvert.SerializeObject(response.Results));
+                return JsonConvert.DeserializeObject<Brand>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -322,8 +331,7 @@ namespace Ansira
 
             if (results != null)
             {
-                ResponseV1 response = JsonConvert.DeserializeObject<ResponseV1>(results); // TEMP
-                return JsonConvert.DeserializeObject<IList<SourceCode>>(JsonConvert.SerializeObject(response.Result));
+                return JsonConvert.DeserializeObject<IList<SourceCode>>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -349,8 +357,7 @@ namespace Ansira
 
             if (results != null)
             {
-                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
-                return JsonConvert.DeserializeObject<SourceCode>(JsonConvert.SerializeObject(response.Results));
+                return JsonConvert.DeserializeObject<SourceCode>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -509,8 +516,7 @@ namespace Ansira
 
             if (results != null)
             {
-                ResponseV1 response = JsonConvert.DeserializeObject<ResponseV1>(results); // TEMP
-                return JsonConvert.DeserializeObject<IList<Breed>>(JsonConvert.SerializeObject(response.Result));
+                return JsonConvert.DeserializeObject<IList<Breed>>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -536,8 +542,7 @@ namespace Ansira
 
             if (results != null)
             {
-                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
-                return JsonConvert.DeserializeObject<Breed>(JsonConvert.SerializeObject(response.Results));
+                return JsonConvert.DeserializeObject<Breed>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -556,8 +561,7 @@ namespace Ansira
 
             if (results != null)
             {
-                ResponseV1 response = JsonConvert.DeserializeObject<ResponseV1>(results); // TEMP
-                return JsonConvert.DeserializeObject<IList<PetFood>>(JsonConvert.SerializeObject(response.Result));
+                return JsonConvert.DeserializeObject<IList<PetFood>>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -583,8 +587,7 @@ namespace Ansira
 
             if (results != null)
             {
-                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
-                return JsonConvert.DeserializeObject<PetFood>(JsonConvert.SerializeObject(response.Results));
+                return JsonConvert.DeserializeObject<PetFood>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -603,8 +606,7 @@ namespace Ansira
 
             if (results != null)
             {
-                ResponseV1 response = JsonConvert.DeserializeObject<ResponseV1>(results); // TEMP
-                return JsonConvert.DeserializeObject<IList<PetOwnershipPlan>>(JsonConvert.SerializeObject(response.Result));
+                return JsonConvert.DeserializeObject<IList<PetOwnershipPlan>>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -630,8 +632,7 @@ namespace Ansira
 
             if (results != null)
             {
-                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
-                return JsonConvert.DeserializeObject<PetOwnershipPlan>(JsonConvert.SerializeObject(response.Results));
+                return JsonConvert.DeserializeObject<PetOwnershipPlan>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -650,8 +651,7 @@ namespace Ansira
 
             if (results != null)
             {
-                ResponseV1 response = JsonConvert.DeserializeObject<ResponseV1>(results); // TEMP
-                return JsonConvert.DeserializeObject<IList<PetType>>(JsonConvert.SerializeObject(response.Result));
+                return JsonConvert.DeserializeObject<IList<PetType>>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -677,8 +677,7 @@ namespace Ansira
 
             if (results != null)
             {
-                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
-                return JsonConvert.DeserializeObject<PetType>(JsonConvert.SerializeObject(response.Results));
+                return JsonConvert.DeserializeObject<PetType>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -704,8 +703,7 @@ namespace Ansira
 
             if (results != null)
             {
-                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
-                return JsonConvert.DeserializeObject<IList<Pet>>(JsonConvert.SerializeObject(response.Results));
+                return JsonConvert.DeserializeObject<IList<Pet>>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -740,8 +738,7 @@ namespace Ansira
             string results = CallApiPost(method, record);
             if (results != null)
             {
-                ResponseV3 response = JsonConvert.DeserializeObject<ResponseV3>(results); // TEMP?
-                return new Pet(); // JsonConvert.DeserializeObject<Pet>(JsonConvert.SerializeObject(response.Record.Results));
+                return JsonConvert.DeserializeObject<Pet>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -802,8 +799,7 @@ namespace Ansira
 
             if (results != null)
             {
-                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
-                return JsonConvert.DeserializeObject<Pet>(JsonConvert.SerializeObject(response.Results));
+                return JsonConvert.DeserializeObject<Pet>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -841,8 +837,7 @@ namespace Ansira
             string results = CallApiPut(method, record); // TODO: Put vs Patch
             if (results != null)
             {
-                ResponseV3 response = JsonConvert.DeserializeObject<ResponseV3>(results); // TEMP?
-                return new Pet(); // JsonConvert.DeserializeObject<Pet>(JsonConvert.SerializeObject(response.Record.Results));
+                return JsonConvert.DeserializeObject<Pet>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -910,8 +905,7 @@ namespace Ansira
 
             if (results != null)
             {
-                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
-                return JsonConvert.DeserializeObject<IList<Subscription>>(JsonConvert.SerializeObject(response.Results));
+                return JsonConvert.DeserializeObject<IList<Subscription>>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -1042,8 +1036,7 @@ namespace Ansira
 
             if (results != null)
             {
-                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
-                return JsonConvert.DeserializeObject<IList<Subscription>>(JsonConvert.SerializeObject(response.Results));
+                return JsonConvert.DeserializeObject<IList<Subscription>>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -1141,8 +1134,7 @@ namespace Ansira
 
             if (results != null)
             {
-                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
-                return JsonConvert.DeserializeObject<IList<User>>(JsonConvert.SerializeObject(response.Results));
+                return JsonConvert.DeserializeObject<IList<User>>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -1168,8 +1160,7 @@ namespace Ansira
 
             if (results != null)
             {
-                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
-                return JsonConvert.DeserializeObject<User>(JsonConvert.SerializeObject(response.Results));
+                return JsonConvert.DeserializeObject<User>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -1196,8 +1187,7 @@ namespace Ansira
 
             if (results != null)
             {
-                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
-                return JsonConvert.DeserializeObject<User>(JsonConvert.SerializeObject(response.Results));
+                return JsonConvert.DeserializeObject<User>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -1226,8 +1216,7 @@ namespace Ansira
 
             if (results != null)
             {
-                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
-                return JsonConvert.DeserializeObject<User>(JsonConvert.SerializeObject(response.Results));
+                return JsonConvert.DeserializeObject<User>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -1263,8 +1252,7 @@ namespace Ansira
 
             if (results != null)
             {
-                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
-                return JsonConvert.DeserializeObject<User>(JsonConvert.SerializeObject(response.Results)); // TODO: this may be a list instead of a single object?
+                return JsonConvert.DeserializeObject<User>(JsonConvert.SerializeObject(results)); // TODO: this may be a list instead of a single object?
             }
             else
             {
@@ -1297,8 +1285,7 @@ namespace Ansira
             string results = CallApiPost("users", record);
             if (results != null)
             {
-                ResponseV3 response = JsonConvert.DeserializeObject<ResponseV3>(results); // TEMP?
-                return JsonConvert.DeserializeObject<User>(JsonConvert.SerializeObject(response.Record));
+                return JsonConvert.DeserializeObject<User>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -1372,8 +1359,7 @@ namespace Ansira
             string results = CallApiPut(method, record); // *** TODO: verify that Patch & Put are the same
             if (results != null)
             {
-                ResponseV3 response = JsonConvert.DeserializeObject<ResponseV3>(results); // TEMP?
-                return JsonConvert.DeserializeObject<User>(JsonConvert.SerializeObject(response.Record));
+                return JsonConvert.DeserializeObject<User>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -1423,8 +1409,7 @@ namespace Ansira
 
             if (results != null)
             {
-                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
-                return JsonConvert.DeserializeObject<Address>(JsonConvert.SerializeObject(response.Results));
+                return JsonConvert.DeserializeObject<Address>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -1464,8 +1449,7 @@ namespace Ansira
             string results = CallApiPut(method, record); // TODO: verify if Put and Patch are identical
             if (results != null)
             {
-                ResponseV3 response = JsonConvert.DeserializeObject<ResponseV3>(results); // TEMP?
-                return JsonConvert.DeserializeObject<Address>(JsonConvert.SerializeObject(response.Record));
+                return JsonConvert.DeserializeObject<Address>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -1501,8 +1485,7 @@ namespace Ansira
             string results = CallApiPost(method, record);
             if (results != null)
             {
-                ResponseV3 response = JsonConvert.DeserializeObject<ResponseV3>(results); // TEMP?
-                return JsonConvert.DeserializeObject<Address>(JsonConvert.SerializeObject(response.Record));
+                return JsonConvert.DeserializeObject<Address>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -1528,8 +1511,7 @@ namespace Ansira
 
             if (results != null)
             {
-                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
-                return JsonConvert.DeserializeObject<Currency>(JsonConvert.SerializeObject(response.Results));
+                return JsonConvert.DeserializeObject<Currency>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -1555,8 +1537,7 @@ namespace Ansira
 
             if (results != null)
             {
-                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
-                return JsonConvert.DeserializeObject<Language>(JsonConvert.SerializeObject(response.Results));
+                return JsonConvert.DeserializeObject<Language>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -1582,8 +1563,7 @@ namespace Ansira
 
             if (results != null)
             {
-                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
-                return JsonConvert.DeserializeObject<Country>(JsonConvert.SerializeObject(response.Results));
+                return JsonConvert.DeserializeObject<Country>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -1609,8 +1589,7 @@ namespace Ansira
 
             if (results != null)
             {
-                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
-                return JsonConvert.DeserializeObject<PetOwnershipPlan>(JsonConvert.SerializeObject(response.Results));
+                return JsonConvert.DeserializeObject<PetOwnershipPlan>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -1636,8 +1615,7 @@ namespace Ansira
 
             if (results != null)
             {
-                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
-                return JsonConvert.DeserializeObject<SourceCode>(JsonConvert.SerializeObject(response.Results));
+                return JsonConvert.DeserializeObject<SourceCode>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -1663,8 +1641,7 @@ namespace Ansira
 
             if (results != null)
             {
-                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
-                return JsonConvert.DeserializeObject<SourceCode>(JsonConvert.SerializeObject(response.Results));
+                return JsonConvert.DeserializeObject<SourceCode>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -1701,8 +1678,7 @@ namespace Ansira
 
             if (results != null)
             {
-                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
-                return JsonConvert.DeserializeObject<User>(JsonConvert.SerializeObject(response.Results));
+                return JsonConvert.DeserializeObject<User>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -1738,8 +1714,7 @@ namespace Ansira
 
             if (results != null)
             {
-                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
-                return response.Status; // TODO: what does this method return?
+                return true; // TODO: what does this method return?
             }
             else
             {
@@ -1762,8 +1737,7 @@ namespace Ansira
 
             if (results != null)
             {
-                ResponseV1 response = JsonConvert.DeserializeObject<ResponseV1>(results); // TEMP
-                return JsonConvert.DeserializeObject<IList<Country>>(JsonConvert.SerializeObject(response.Result));
+                return JsonConvert.DeserializeObject<IList<Country>>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -1789,8 +1763,7 @@ namespace Ansira
 
             if (results != null)
             {
-                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
-                return JsonConvert.DeserializeObject<Country>(JsonConvert.SerializeObject(response.Results));
+                return JsonConvert.DeserializeObject<Country>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -1809,8 +1782,7 @@ namespace Ansira
 
             if (results != null)
             {
-                ResponseV1 response = JsonConvert.DeserializeObject<ResponseV1>(results); // TEMP
-                return JsonConvert.DeserializeObject<IList<Currency>>(JsonConvert.SerializeObject(response.Result));
+                return JsonConvert.DeserializeObject<IList<Currency>>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -1836,8 +1808,7 @@ namespace Ansira
 
             if (results != null)
             {
-                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
-                return JsonConvert.DeserializeObject<Currency>(JsonConvert.SerializeObject(response.Results));
+                return JsonConvert.DeserializeObject<Currency>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -1856,8 +1827,7 @@ namespace Ansira
 
             if (results != null)
             {
-                ResponseV1 response = JsonConvert.DeserializeObject<ResponseV1>(results); // TEMP
-                return JsonConvert.DeserializeObject<IList<Language>>(JsonConvert.SerializeObject(response.Result));
+                return JsonConvert.DeserializeObject<IList<Language>>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -1883,8 +1853,7 @@ namespace Ansira
 
             if (results != null)
             {
-                ResponseV2 response = JsonConvert.DeserializeObject<ResponseV2>(results); // TEMP
-                return JsonConvert.DeserializeObject<Language>(JsonConvert.SerializeObject(response.Results));
+                return JsonConvert.DeserializeObject<Language>(JsonConvert.SerializeObject(results));
             }
             else
             {
@@ -1931,7 +1900,7 @@ namespace Ansira
             string results = CallApiPost(method, record);
             if (results != null)
             {
-                ResponseV3 response = JsonConvert.DeserializeObject<ResponseV3>(results); // TEMP?
+                ResponseCoupon response = JsonConvert.DeserializeObject<ResponseCoupon>(results);
                 return JsonConvert.DeserializeObject<User>(JsonConvert.SerializeObject(response.Record));
             }
             else

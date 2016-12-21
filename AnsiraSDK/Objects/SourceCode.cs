@@ -14,7 +14,7 @@ namespace Ansira.Objects
     public class SourceCode
     {
         [JsonProperty(PropertyName = "key")]
-        public int Id { get; set; } // TODO: verify if is int or string
+        public int? Id { get; set; } // TODO: verify if is int or string
 
         [JsonProperty(PropertyName = "name")]
         public string Name { get; set; }
@@ -31,7 +31,7 @@ namespace Ansira.Objects
 
         [JsonProperty(PropertyName = "expiresAt")]
         [JsonConverter(typeof(MonthDayYearDateConverter))]
-        public DateTime ExpiresAt { get; set; }
+        public DateTime? ExpiresAt { get; set; }
 
         // TODO: [eventActions][] ? Have no info on data model
     }

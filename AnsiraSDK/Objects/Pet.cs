@@ -60,7 +60,7 @@ namespace Ansira.Objects
         public string Gender { get; set; }
 
         [JsonProperty(PropertyName = "ageInMonths")]
-        public int AgeInMonths { get; set; }
+        public int? AgeInMonths { get; set; }
 
         [JsonProperty(PropertyName = "primaryBreed")]
         public Breed PrimaryBreed { get; set; }
@@ -78,7 +78,7 @@ namespace Ansira.Objects
         public PetFood FoodPrefDry { get; set; }
 
         [JsonProperty(PropertyName = "isSterile")]
-        public bool IsSterile { get; set; }
+        public bool? IsSterile { get; set; }
 
         [JsonProperty(PropertyName = "birthDate")]
         [JsonConverter(typeof(MonthDayYearDateConverter))]

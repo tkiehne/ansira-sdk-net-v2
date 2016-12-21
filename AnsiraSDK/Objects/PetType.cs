@@ -13,7 +13,7 @@ namespace Ansira.Objects
     public class PetType
     {
         [JsonProperty(PropertyName = "id")]
-        public int Id { get; set; }
+        public int? Id { get; set; }
 
         [JsonProperty(PropertyName = "keyName")]
         [Required(AllowEmptyStrings = false)]

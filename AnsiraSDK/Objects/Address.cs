@@ -57,9 +57,9 @@ namespace Ansira.Objects
         public string Fax { get; set; }
 
         [JsonProperty(PropertyName = "latitude")]
-        public double Latitude { get; set; }
+        public double? Latitude { get; set; }
 
         [JsonProperty(PropertyName = "longitude")]
-        public double Longitude { get; set; }
+        public double? Longitude { get; set; }
     }
 }

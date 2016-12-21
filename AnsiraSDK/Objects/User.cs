@@ -43,13 +43,13 @@ namespace Ansira.Objects
         public string MiddleName { get; set; }
 
         [JsonProperty(PropertyName = "dogCount")]
-        public int DogCount { get; set; }
+        public int? DogCount { get; set; }
 
         [JsonProperty(PropertyName = "catCount")]
-        public int CatCount { get; set; }
+        public int? CatCount { get; set; }
 
         [JsonProperty(PropertyName = "totalPets")]
-        public int TotalPets { get; set; }
+        public int? TotalPets { get; set; }
 
         [JsonProperty(PropertyName = "address")]
         public Address Address { get; set; }
@@ -85,7 +85,7 @@ namespace Ansira.Objects
         public List<dynamic> Ext { get; set; } // leaving this dynamic for now
 
         [JsonProperty(PropertyName = "enabled")]
-        public bool Enabled { get; set; }
+        public bool? Enabled { get; set; }
 
         [JsonProperty(PropertyName = "createdAt")]
         [JsonConverter(typeof(MonthDayYearDateConverter))]

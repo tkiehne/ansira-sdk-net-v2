@@ -64,9 +64,8 @@
     <Compile Include="Objects\PetOwnershipPlan.cs" />
     <Compile Include="Objects\PetType.cs" />
     <Compile Include="Objects\Response.cs" />
-    <Compile Include="Objects\ResponseV1.cs" />
-    <Compile Include="Objects\ResponseV2.cs" />
-    <Compile Include="Objects\ResponseV3.cs" />
+    <Compile Include="Objects\ResponseCoupon.cs" />
+    <Compile Include="Objects\ResponseError.cs" />
     <Compile Include="Objects\SourceCode.cs" />
     <Compile Include="Objects\Store.cs" />
     <Compile Include="Objects\Subscription.cs" />
