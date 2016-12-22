@@ -13,9 +13,6 @@ namespace Ansira.Objects
         [JsonProperty(PropertyName = "id")]
         public int? Id { get; set; }
 
-        [JsonProperty(PropertyName = "user_id")]
-        public int? UserId { get; set; }
-
         [JsonProperty(PropertyName = "name")]
         [MinLength(1)]
         [MaxLength(100)]

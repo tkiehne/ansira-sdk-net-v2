@@ -201,6 +201,11 @@ namespace Ansira
             }
             catch (WebException exception)
             {
+                if(((HttpWebResponse)exception.Response).StatusCode == HttpStatusCode.NotFound)
+                {
+                    return null; // can't parse json from a 404 page
+                }
+
                 string responseText;
 
                 using (var reader = new StreamReader(exception.Response.GetResponseStream()))
@@ -730,7 +735,11 @@ namespace Ansira
                 throw new ArgumentNullException("userId", "User ID must not be null");
             }
             // TODO: Validate Pet
-            
+            if (pet.AgeInMonths != null && pet.DateOfBirth != null)
+            {
+                pet.AgeInMonths = null; // not allowed to set both
+            }
+
             // pass through JSON to get correct parameters
             string record = JsonConvert.SerializeObject(pet, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
             
@@ -830,7 +839,10 @@ namespace Ansira
                 throw new ArgumentNullException("userId", "User ID must not be null");
             }
             // TODO: Validate Pet
-            
+            if (pet.AgeInMonths != null && pet.DateOfBirth != null)
+            {
+                pet.AgeInMonths = null; // not allowed to set both
+            }
             string record = JsonConvert.SerializeObject(pet, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
             string method = String.Format("users/{0}/pets/{1}", userId, pet.Id);
@@ -997,8 +1009,6 @@ namespace Ansira
             {
                 throw new ArgumentNullException("brandCode", "Must supply a brand code");
             }
-            // NameValueCollection data = new NameValueCollection(); TODO: do we need parameters?
-            // data.Add("subscriptions[]", brandCode);
 
             string method = String.Format("users/{0}/subscriptions/{1}", userId, brandCode);
             string results = CallApiDelete(method, null);
@@ -1063,8 +1073,6 @@ namespace Ansira
             {
                 throw new ArgumentNullException("brandCode", "Must supply a brand code");
             }
-            // NameValueCollection data = new NameValueCollection(); TODO: do we need parameters?
-            // data.Add("subscriptions[]", brandCode);
 
             string method = String.Format("users/{0}/subscriptions/{1}", userId, brandCode);
             string results = CallApiPut(method, null); // TODO: verify if Put and Patch are the same
@@ -1096,8 +1104,6 @@ namespace Ansira
             {
                 throw new ArgumentNullException("brandCode", "Must supply a brand code");
             }
-            // NameValueCollection data = new NameValueCollection(); TODO: do we need parameters?
-            // data.Add("subscriptions[]", brandCode);
 
             string method = String.Format("users/{0}/subscriptions/{1}", userId, brandCode);
             string results = CallApiPost(method, null);
@@ -1160,7 +1166,7 @@ namespace Ansira
 
             if (results != null)
             {
-                return JsonConvert.DeserializeObject<IList<User>>(results)[0];
+                return JsonConvert.DeserializeObject<User>(results);
             }
             else
             {
@@ -1445,7 +1451,7 @@ namespace Ansira
             
             string record = JsonConvert.SerializeObject(address, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
-            string method = String.Format("users/{0}/address/{1}", userId, address.Id);
+            string method = String.Format("users/{0}/address", userId);
             string results = CallApiPut(method, record); // TODO: verify if Put and Patch are identical
             if (results != null)
             {
@@ -1668,10 +1674,7 @@ namespace Ansira
                 throw new ArgumentNullException("password", "Password must not be null");
             }
 
-            NameValueCollection data = new NameValueCollection();
-            data.Add("password", password);
-
-            string record = JsonConvert.SerializeObject(data, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            string record = JsonConvert.SerializeObject(new { password = password }, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
             string method = String.Format("users/{0}/password/change", userId);
             string results = CallApiPost(method, record);
@@ -1705,16 +1708,14 @@ namespace Ansira
                 throw new ArgumentNullException("password", "Password must not be null");
             }
 
-            NameValueCollection data = new NameValueCollection();
-            data.Add("password", password);
-            string record = JsonConvert.SerializeObject(data, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            string record = JsonConvert.SerializeObject(new { password = password }, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
             string method = String.Format("users/{0}/password/verify", userId);
             string results = CallApiPost(method, record);
 
             if (results != null)
             {
-                return true; // TODO: what does this method return?
+                return true;
             }
             else
             {
