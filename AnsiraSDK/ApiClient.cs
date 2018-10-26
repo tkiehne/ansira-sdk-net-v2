@@ -17,10 +17,10 @@ namespace Ansira
     /// </summary>
     public class ApiClient
     {
-        public string uatUrl = "https://uat-purinareg.ansiradigital.com/service/api/v2/";
-        public string prodUrl = "https://profiles.purina.com/service/api/v2/";
-        public string uatOAuthUrl = "https://uat-purinareg.ansiradigital.com/service/oauth/v2/";
-        public string prodOAuthUrl = "https://profiles.purina.com/service/oauth/v2/";
+        public string uatUrl = "https://[YOUR ENDPOINT HERE]/service/api/v2/";
+        public string prodUrl = "https://[YOUR ENDPOINT HERE]/service/api/v2/";
+        public string uatOAuthUrl = "https://[YOUR ENDPOINT HERE]/service/oauth/v2/";
+        public string prodOAuthUrl = "https://[YOUR ENDPOINT HERE]/service/oauth/v2/";
         protected string apiUrl, oAuthUrl, clientId, clientSecret;
         protected List<string> validMethods;
 
