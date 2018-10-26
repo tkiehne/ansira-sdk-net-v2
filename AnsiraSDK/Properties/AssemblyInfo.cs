@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("AnsiraSDK2")]
-[assembly: AssemblyDescription(".NET objects for accessing Ansira's contact API v.2")]
+[assembly: AssemblyDescription(".NET objects for accessing the contact API v.2")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Fosforus, Inc.")]
 [assembly: AssemblyProduct("AnsiraSDK2")]
